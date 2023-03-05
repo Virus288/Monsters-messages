@@ -1,0 +1,30 @@
+{
+  "messages": [
+    {
+      "_id": "63e55edbe8a800060911121d",
+      "body": "63e55edbe8a800060941121d",
+      "receiver": "63e55edbe8a800060931121d",
+      "sender": "63e55edbe8a800060921121d",
+      "owner": "63e55edbe8a800060931121d",
+      "read": false
+    },
+    {
+      "_id": "63e55edbe8a800060911121e",
+      "body": "63e55edbe8a800060941121e",
+      "receiver": "63e55edbe8a800060931121e",
+      "sender": "63e55edbe8a800060921121e",
+      "owner": "63e55edbe8a800060931121d",
+      "read": true
+    }
+  ],
+  "details": [
+    {
+      "_id": "63e55edbe8a800060941121d",
+      "message": "Hi there"
+    },
+    {
+      "_id": "63e55edbe8a800060941121e",
+      "message": "Hi there"
+    }
+  ]
+}
