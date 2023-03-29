@@ -2,112 +2,127 @@
 export class FullError extends Error {
   code = '000';
   status = 500;
-  userId: string;
 }
 
-export class InternalError extends FullError {
+export class MissingProcessPlatformError extends FullError {
   constructor() {
-    super('InternalError');
-    this.message = 'Internal error. Try again later';
-    this.name = 'InternalError';
+    super('MissingProcessPlatformError');
+    this.message = 'process.platform is missing';
+    this.name = 'MissingProcessPlatformError';
     this.code = '001';
     this.status = 500;
   }
 }
 
-export class MissingProcessPlatform extends FullError {
-  constructor() {
-    super('MissingProcessPlatform');
-    this.message = 'process.platform is missing';
-    this.name = 'MissingProcessPlatform';
+export class MissingArgError extends FullError {
+  constructor(param: string) {
+    super('MissingArgError');
+    this.message = `Missing param: ${param}`;
+    this.name = 'MissingArgError';
     this.code = '002';
     this.status = 400;
   }
 }
 
-export class NotFoundError extends FullError {
-  constructor(userId: string) {
-    super('NotFoundError');
-    this.message = 'Resource not found';
-    this.name = 'NotFoundError';
+export class IncorrectArgError extends FullError {
+  constructor(err: string) {
+    super('IncorrectArgError');
+    this.message = err;
+    this.name = 'IncorrectArgError';
     this.code = '003';
-    this.status = 404;
-    this.userId = userId;
+    this.status = 400;
   }
 }
 
-export class WrongType extends FullError {
-  constructor(userId: string) {
-    super('WrongType');
-    this.message = 'Wrong type of data';
-    this.name = 'WrongType';
+export class IncorrectArgTypeError extends FullError {
+  constructor(err: string) {
+    super('IncorrectArgTypeError');
+    this.message = err;
+    this.name = 'IncorrectArgTypeError';
     this.code = '004';
     this.status = 400;
-    this.userId = userId;
   }
 }
 
-export class Unauthorized extends FullError {
-  constructor() {
-    super('Unauthorized');
-    this.message = 'User not logged in';
-    this.name = 'Unauthorized';
+export class IncorrectCredentialsError extends FullError {
+  constructor(message?: string) {
+    super('IncorrectCredentialsError');
+    this.message = message ?? 'Incorrect credentials';
+    this.name = 'IncorrectCredentialsError';
     this.code = '005';
-    this.status = 401;
+    this.status = 400;
   }
 }
 
-export class InvalidType extends FullError {
-  constructor(userId: string, target: string) {
-    super('InvalidType');
-    this.message = `Invalid type. Element ${target} has wrong type`;
-    this.name = 'InvalidType';
+export class UserAlreadyRegisteredError extends FullError {
+  constructor() {
+    super('UserAlreadyRegisteredError');
+    this.message = 'Email already registered';
+    this.name = 'UserAlreadyRegisteredError';
     this.code = '006';
     this.status = 400;
-    this.userId = userId;
   }
 }
 
-export class InvalidMongooseType extends FullError {
-  constructor(userId: string, target: string) {
-    super('InvalidMongooseType');
-    this.message = `Invalid type. Element ${target} is not valid mongoDB id`;
-    this.name = 'InvalidMongooseType';
+export class UsernameAlreadyInUseError extends FullError {
+  constructor() {
+    super('UsernameAlreadyInUseError');
+    this.message = 'Selected username is already in use';
+    this.name = 'UsernameAlreadyInUseError';
     this.code = '007';
     this.status = 400;
-    this.userId = userId;
   }
 }
 
-export class MissingData extends FullError {
-  constructor(userId: string, data: string) {
-    super('MissingData');
-    this.message = `Value: ${data} is missing`;
-    this.name = 'MissingData';
+export class ProfileAlreadyExistsError extends FullError {
+  constructor() {
+    super('ProfileAlreadyExistsError');
+    this.message = 'Profile already exists';
+    this.name = 'ProfileAlreadyExistsError';
     this.code = '008';
     this.status = 400;
-    this.userId = userId;
   }
 }
 
-export class InvalidSize extends FullError {
-  constructor(userId: string, message: string) {
-    super('InvalidSize');
-    this.message = message;
-    this.name = 'InvalidSize';
+export class IncorrectArgLengthError extends FullError {
+  constructor(target: string, min: number | undefined, max: number) {
+    super('IncorrectArgLengthError');
+    this.message =
+      min === undefined
+        ? `Elm ${target} should be less than ${max} characters`
+        : `Elm ${target} should be more than ${min} and less than ${max} characters`;
+    this.name = 'IncorrectArgLengthError';
     this.code = '009';
     this.status = 400;
-    this.userId = userId;
   }
 }
 
-export class MissingMessage extends FullError {
-  constructor(userId: string) {
-    super('InvalidSize');
-    this.message = 'Selected message does not exist';
-    this.name = 'InvalidSize';
+export class IncorrectTargetError extends FullError {
+  constructor() {
+    super('IncorrectTargetError');
+    this.message = 'Incorrect data target';
+    this.name = 'IncorrectTargetError';
     this.code = '010';
     this.status = 400;
-    this.userId = userId;
+  }
+}
+
+export class NotConnectedError extends FullError {
+  constructor() {
+    super('NotConnectedError');
+    this.message = 'Rabbit is not connected';
+    this.name = 'NotConnectedError';
+    this.code = '011';
+    this.status = 500;
+  }
+}
+
+export class MissingMessageError extends FullError {
+  constructor() {
+    super('MissingMessageError');
+    this.message = 'Targeted message does not exist';
+    this.name = 'MissingMessageError';
+    this.code = '012';
+    this.status = 400;
   }
 }

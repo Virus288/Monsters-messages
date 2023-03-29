@@ -1,39 +1,16 @@
-import mongoose from 'mongoose';
-import { IMessageDetailsLean } from './messageDetails';
+import type mongoose from 'mongoose';
+import type { IMessageEntity } from '../modules/messages/entity';
+import type { ISendMessageDto } from '../modules/messages/dto';
+import type { IMessageDetailsEntity } from '../modules/messagesDetails/entity';
 
-export interface IMessageSend {
-  body: string;
-  receiver: string;
-  sender: string;
-}
-
-export interface IMessage extends IMessageLean, mongoose.Document {
+export interface IMessage extends IMessageEntity, mongoose.Document {
   _id: mongoose.Types.ObjectId;
 }
 
-export interface IMessageLean extends IMessageSend {
-  _id: string;
-  owner: string;
-  read: boolean;
+export interface IFullMessageRaw extends IMessageEntity {
+  details: IMessageDetailsEntity[];
 }
 
-export interface IMessageGet {
-  page: number;
-  message?: string;
-}
-
-export interface IMessageRead extends IMessageGet {
-  message: string;
-}
-
-export interface IFullMessageLean extends IMessageLean {
-  details: IMessageDetailsLean;
-}
-
-export interface IFullMessageRaw extends IMessageLean {
-  details: IMessageDetailsLean[];
-}
-
-export interface INewMessage extends IMessageSend {
+export interface INewMessage extends ISendMessageDto {
   owner: string;
 }

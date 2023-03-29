@@ -1,6 +1,6 @@
 import Details from './model';
-import type * as types from '../../types';
-import mongoose from 'mongoose';
+import type mongoose from 'mongoose';
+import type { IMessageDetailsEntity } from './entity';
 
 export default class Rooster {
   async add(message: string): Promise<mongoose.Types.ObjectId> {
@@ -9,7 +9,7 @@ export default class Rooster {
     return document._id;
   }
 
-  async get(ids: string[]): Promise<types.IMessageDetailsLean> {
+  async get(ids: string[]): Promise<IMessageDetailsEntity> {
     return Details.find({
       _id: {
         $in: ids,

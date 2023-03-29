@@ -1,20 +1,26 @@
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from '@jest/globals';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import Rooster from '../../../src/modules/messages/rooster';
 import fakeData from '../../utils/fakeData.json';
-import { IMessageDetailsLean, IMessageLean } from '../../../src/types';
-import Database from '../../utils/mockDB';
+import { IMessageEntity } from '../../../src/modules/messages/entity';
+import { IMessageDetailsEntity } from '../../../src/modules/messagesDetails/entity';
+import FakeFactory from '../../utils/fakeFactory/src';
 
 describe('Messages', () => {
-  const fakeMessage = fakeData.messages[0] as IMessageLean;
-  const fakeDetails = fakeData.details[0] as IMessageDetailsLean;
-  const fakeMessage2 = fakeData.messages[1] as IMessageLean;
+  const db = new FakeFactory();
+  const fakeMessage = fakeData.messages[0] as IMessageEntity;
+  const fakeDetails = fakeData.details[0] as IMessageDetailsEntity;
+  const fakeMessage2 = fakeData.messages[1] as IMessageEntity;
   const rooster = new Rooster();
 
   beforeAll(async () => {
     const server = await MongoMemoryServer.create();
     await mongoose.connect(server.getUri());
+  });
+
+  afterEach(async () => {
+    await db.cleanUp();
   });
 
   afterAll(async () => {
@@ -33,16 +39,15 @@ describe('Messages', () => {
     });
 
     it(`Get message`, async () => {
-      const db = new Database();
       await db.message
-        .id(fakeMessage2._id)
+        ._id(fakeMessage2._id)
         .sender(fakeMessage2.sender)
         .body(fakeMessage2.body)
         .owner(fakeMessage2.owner)
         .read(fakeMessage2.read)
         .receiver(fakeMessage2.receiver)
         .create();
-      await db.details.id(fakeDetails._id).message(fakeDetails.message).create();
+      await db.details._id(fakeDetails._id).message(fakeDetails.message).create();
 
       const message = await rooster.getWithDetails(fakeMessage2.owner, 1);
 

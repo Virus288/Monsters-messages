@@ -1,23 +1,22 @@
 import Message from './model';
 import type * as types from '../../types';
-import { INewMessage } from '../../types';
 import { EDbCollections } from '../../enums';
-import { IObjectUpdate } from '../../types/generic';
 import mongoose from 'mongoose';
+import type { IFullMessageEntity, IMessageEntity } from './entity';
 
 export default class Rooster {
-  async add(data: INewMessage): Promise<void> {
+  async add(data: types.INewMessage): Promise<void> {
     const NewMessage = new Message(data);
     await NewMessage.save();
   }
 
   async get(owner: string, page: number): Promise<types.IMessage[]> {
-    return Message.find({ owner: owner })
+    return Message.find({ owner })
       .limit(20)
       .skip((page - 1) * 20);
   }
 
-  async getWithDetails(owner: string, page: number): Promise<types.IFullMessageLean[]> {
+  async getWithDetails(owner: string, page: number): Promise<IFullMessageEntity[]> {
     const data = (await Message.aggregate([
       {
         $match: { owner: new mongoose.Types.ObjectId(owner) },
@@ -34,16 +33,18 @@ export default class Rooster {
       .limit(20)
       .skip((page - 1) * 20)) as types.IFullMessageRaw[];
 
+    if (!data || data.length === 0) return [];
+
     return data.map((elm) => {
-      return { ...elm, details: elm.details[0] } as types.IFullMessageLean;
+      return { ...elm, details: elm.details[0] } as IFullMessageEntity;
     });
   }
 
-  async getOne(_id: string): Promise<types.IMessage[]> {
-    return Message.findOne({ _id: _id });
+  async getOne(_id: string): Promise<IMessageEntity | null> {
+    return Message.findOne({ _id }).lean();
   }
 
-  async getOneWithDetails(_id: string, owner: string): Promise<types.IFullMessageLean[]> {
+  async getOneWithDetails(_id: string, owner: string): Promise<IFullMessageEntity[]> {
     const data: types.IFullMessageRaw[] = await Message.aggregate([
       {
         $match: { owner: new mongoose.Types.ObjectId(owner), _id: new mongoose.Types.ObjectId(_id) },
@@ -58,12 +59,14 @@ export default class Rooster {
       },
     ]);
 
+    if (!data || data.length === 0) return [];
+
     return data.map((elm) => {
-      return { ...elm, details: elm.details[0] } as types.IFullMessageLean;
+      return { ...elm, details: elm.details[0] } as IFullMessageEntity;
     });
   }
 
-  async getUnreadWithDetails(owner: string, page: number): Promise<types.IFullMessageLean[]> {
+  async getUnreadWithDetails(owner: string, page: number): Promise<IFullMessageEntity[]> {
     const data = (await Message.aggregate([
       {
         $match: { owner: new mongoose.Types.ObjectId(owner), read: false },
@@ -80,12 +83,14 @@ export default class Rooster {
       .limit(20)
       .skip((page - 1) * 20)) as types.IFullMessageRaw[];
 
+    if (!data || data.length === 0) return [];
+
     return data.map((elm) => {
-      return { ...elm, details: elm.details[0] } as types.IFullMessageLean;
+      return { ...elm, details: elm.details[0] } as IFullMessageEntity;
     });
   }
 
-  async update(_id: string, data: IObjectUpdate<types.IMessageLean, keyof types.IMessageLean>): Promise<void> {
-    await Message.updateOne({ _id: _id }, { $set: { ...data } }, { upsert: true });
+  async update(_id: string, data: types.IObjectUpdate<IMessageEntity, keyof IMessageEntity>): Promise<void> {
+    await Message.updateOne({ _id }, { $set: { ...data } }, { upsert: true });
   }
 }
