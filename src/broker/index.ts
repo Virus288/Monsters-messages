@@ -2,40 +2,55 @@ import * as enums from '../enums';
 import type * as types from '../types';
 import amqplib from 'amqplib';
 import getConfig from '../tools/configLoader';
-import { FullError } from '../errors';
+import type { FullError } from '../errors';
+import { NotConnectedError } from '../errors';
 import Log from '../tools/logger/log';
 import Router from './router';
 
 export default class Broker {
-  private retryTimeout: NodeJS.Timeout;
-  private connection: amqplib.Connection;
-  private connectionTries = 0;
+  private _retryTimeout!: NodeJS.Timeout;
+  private _connection: amqplib.Connection | undefined;
+  private _connectionTries = 0;
+  private _channel: amqplib.Channel | undefined;
+  private _channelTries = 0;
+  private _queue: Record<string, types.IRabbitMessage> = {};
+  private readonly _router: Router;
 
-  private channel: amqplib.Channel;
-  private channelTries = 0;
-  private queue: Record<string, types.IRabbitMessage> = {};
+  constructor() {
+    this._router = new Router();
+  }
 
-  private router: Router;
+  private get router(): Router {
+    return this._router;
+  }
 
   init(): void {
-    this.router = new Router();
     this.initCommunication();
   }
 
   send(userId: string, payload: unknown, target: enums.EMessageTypes): void {
-    const body = { ...this.queue[userId], payload, target };
-    delete this.queue[userId];
-    this.channel.sendToQueue(enums.EAmqQueues.Gateway, Buffer.from(JSON.stringify(body)));
+    const body = { ...this._queue[userId], payload, target };
+    delete this._queue[userId];
+    if (!this._channel) throw new NotConnectedError();
+    this._channel.sendToQueue(enums.EAmqQueues.Gateway, Buffer.from(JSON.stringify(body)));
   }
 
   close(): void {
-    this.connection
+    if (!this._connection) return;
+
+    this._connection
       .close()
       .then(() => {
-        if (this.retryTimeout) clearTimeout(this.retryTimeout);
+        if (this._retryTimeout) clearTimeout(this._retryTimeout);
         this.cleanAll();
       })
       .catch(() => null);
+  }
+
+  private sendHeartBeat(payload: unknown, target: enums.EMessageTypes): void {
+    const body = { payload, target };
+    if (!this._channel) throw new NotConnectedError();
+    this._channel.sendToQueue(enums.EAmqQueues.Gateway, Buffer.from(JSON.stringify(body)));
   }
 
   private reconnect(): void {
@@ -44,7 +59,7 @@ export default class Broker {
   }
 
   private initCommunication(): void {
-    if (this.connectionTries++ > enums.ERabbit.RetryLimit) {
+    if (this._connectionTries++ > enums.ERabbit.RetryLimit) {
       Log.error('Rabbit', 'Gave up connecting to rabbit. Is rabbit dead?');
       return;
     }
@@ -53,7 +68,7 @@ export default class Broker {
       .connect(getConfig().amqpURI)
       .then((connection) => {
         Log.log('Rabbit', 'Connected to rabbit');
-        this.connection = connection;
+        this._connection = connection;
         connection.on('close', () => this.close());
         connection.on('error', () => this.reconnect());
         this.createChannels();
@@ -61,22 +76,23 @@ export default class Broker {
       .catch((err) => {
         Log.warn('Rabbit', 'Error connecting to RabbitMQ, retrying in 1 second');
         Log.error('Rabbit', err);
-        this.retryTimeout = setTimeout(() => this.initCommunication(), 1000);
-        return (this.connection = null);
+        this._retryTimeout = setTimeout(() => this.initCommunication(), 1000);
+        return (this._connection = undefined);
       });
   }
 
   private createChannels(): void {
-    if (this.channel) return;
-    if (this.channelTries++ > enums.ERabbit.RetryLimit) {
+    if (this._channel) return;
+    if (!this._connection) throw new NotConnectedError();
+    if (this._channelTries++ > enums.ERabbit.RetryLimit) {
       Log.error('Rabbit', 'Error creating rabbit connection channel, stopped retrying');
     }
 
-    this.connection
+    this._connection
       .createChannel()
       .then((channel) => {
         Log.log('Rabbit', 'Channel connected');
-        this.channel = channel;
+        this._channel = channel;
         channel.on('close', () => this.cleanAll());
         channel.on('error', () => this.reconnectChannel());
         return this.createQueue();
@@ -87,45 +103,43 @@ export default class Broker {
           'Rabbit',
           `Error creating rabbit connection channel, retrying in 1 second: ${(err as types.IFullError).message}`,
         );
-        this.retryTimeout = setTimeout(() => this.createChannels(), 1000);
-        return (this.channel = null);
+        this._retryTimeout = setTimeout(() => this.createChannels(), 1000);
+        return (this._channel = undefined);
       });
   }
 
   private async createQueue(): Promise<void> {
     Log.log('Rabbit', `Creating channel: ${enums.EAmqQueues.Gateway}`);
     Log.log('Rabbit', `Creating channel: ${enums.EAmqQueues.Messages}`);
-    await this.channel.assertQueue(enums.EAmqQueues.Gateway, { durable: true });
-    await this.channel.assertQueue(enums.EAmqQueues.Messages, { durable: true });
-    await this.channel.consume(
+    await this._channel!.assertQueue(enums.EAmqQueues.Gateway, { durable: true });
+    await this._channel!.assertQueue(enums.EAmqQueues.Messages, { durable: true });
+    await this._channel!.consume(
       enums.EAmqQueues.Messages,
       (message) => {
+        if (!message) return;
         const payload = JSON.parse(message.content.toString()) as types.IRabbitMessage;
         if (payload.target === enums.EMessageTypes.Heartbeat) {
-          return this.send(undefined, enums.EServices.Messages, enums.EMessageTypes.Heartbeat);
+          this.sendHeartBeat(enums.EServices.Messages, enums.EMessageTypes.Heartbeat);
         } else {
-          this.queue[payload.user.userId ?? payload.user.tempId] = payload;
-          this.errorWrapper(
-            async () => await this.router.handleMessage(payload),
-            payload.user.userId ?? payload.user.tempId,
-          );
+          this._queue[payload.user.userId ?? payload.user.tempId] = payload;
+          this.errorWrapper(async () => this.router.handleMessage(payload), payload.user.userId ?? payload.user.tempId);
         }
       },
       { noAck: true },
     );
-    return this.send(undefined, enums.EServices.Messages, enums.EMessageTypes.Heartbeat);
+    return this.sendHeartBeat(enums.EServices.Messages, enums.EMessageTypes.Heartbeat);
   }
 
   private async closeChannel(): Promise<void> {
-    if (this.retryTimeout) {
-      clearTimeout(this.retryTimeout);
+    if (this._retryTimeout) {
+      clearTimeout(this._retryTimeout);
     }
-    await this.channel.purgeQueue(enums.EAmqQueues.Messages);
-    await this.channel.deleteQueue(enums.EAmqQueues.Messages);
+    await this._channel!.purgeQueue(enums.EAmqQueues.Messages);
+    await this._channel!.deleteQueue(enums.EAmqQueues.Messages);
 
-    await this.channel.close().catch(() => null);
-    this.channel = null;
-    this.channelTries = 0;
+    await this._channel!.close().catch(() => null);
+    this._channel = undefined;
+    this._channelTries = 0;
   }
 
   private reconnectChannel(): void {
@@ -141,20 +155,20 @@ export default class Broker {
   }
 
   private cleanAll(): void {
-    this.channel = null;
-    this.connection = null;
-    this.connectionTries = 0;
-    this.channelTries = 0;
-    clearTimeout(this.retryTimeout);
+    this._channel = undefined;
+    this._connection = undefined;
+    this._connectionTries = 0;
+    this._channelTries = 0;
+    clearTimeout(this._retryTimeout);
   }
 
   private errorWrapper(func: () => Promise<void>, user: string): void {
     func().catch((err) => {
-      const { userId, message, name, code, status } = err as FullError;
+      const { message, name, code, status } = err as FullError;
       if (!status) {
-        this.send(userId ?? user, { message, name, code, status: 500 }, enums.EMessageTypes.Error);
+        this.send(user, { message, name, code, status: 500 }, enums.EMessageTypes.Error);
       } else {
-        this.send(userId ?? user, { message, name, code, status }, enums.EMessageTypes.Error);
+        this.send(user, { message, name, code, status }, enums.EMessageTypes.Error);
       }
     });
   }

@@ -8,3 +8,7 @@ export enum EMessagesTargets {
   getChat = 'getChat',
   readChat = 'readChat',
 }
+
+export enum EMessageTargets {
+  Messages = 'messages',
+}

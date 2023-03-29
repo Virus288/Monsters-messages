@@ -1,7 +1,7 @@
-import * as enums from '../enums';
+import type * as enums from '../enums';
 
 export interface ILocalUser {
-  userId: string | undefined;
+  userId: string;
   tempId: string;
   validated: boolean;
   type: enums.EUserTypes;

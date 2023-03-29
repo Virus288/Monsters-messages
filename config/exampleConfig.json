@@ -1,6 +1,4 @@
 {
   "amqpURI": "rabbitUrl",
-  "token": "mainToken",
-  "refToken": "refreshToken",
   "mongoURI": "mongodb://user:password@localhost:27017/Users"
 }
