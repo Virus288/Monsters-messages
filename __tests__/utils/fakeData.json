@@ -6,7 +6,8 @@
       "receiver": "63e55edbe8a800060931121d",
       "sender": "63e55edbe8a800060921121d",
       "owner": "63e55edbe8a800060931121d",
-      "read": false
+      "read": false,
+      "type": "messages"
     },
     {
       "_id": "63e55edbe8a800060911121e",
@@ -14,7 +15,8 @@
       "receiver": "63e55edbe8a800060931121e",
       "sender": "63e55edbe8a800060921121e",
       "owner": "63e55edbe8a800060931121d",
-      "read": true
+      "read": true,
+      "type": "messages"
     }
   ],
   "details": [

@@ -1,5 +1,6 @@
 import Message from './model';
 import type * as types from '../../types';
+import type { EMessageTargets } from '../../enums';
 import { EDbCollections } from '../../enums';
 import mongoose from 'mongoose';
 import type { IFullMessageEntity, IMessageEntity } from './entity';
@@ -10,16 +11,17 @@ export default class Rooster {
     await NewMessage.save();
   }
 
-  async get(owner: string, page: number): Promise<types.IMessage[]> {
-    return Message.find({ owner })
+  async get(owner: string, page: number): Promise<IMessageEntity[]> {
+    return Message.find({ $or: [{ sender: owner }, { receiver: owner }] })
       .limit(20)
-      .skip((page - 1) * 20);
+      .skip((page - 1) * 20)
+      .lean();
   }
 
-  async getWithDetails(owner: string, page: number): Promise<IFullMessageEntity[]> {
+  async getWithDetails(chatId: string, page: number): Promise<IFullMessageEntity[]> {
     const data = (await Message.aggregate([
       {
-        $match: { owner: new mongoose.Types.ObjectId(owner) },
+        $match: { chatId: new mongoose.Types.ObjectId(chatId) },
       },
       {
         $lookup: {
@@ -40,57 +42,30 @@ export default class Rooster {
     });
   }
 
-  async getOne(_id: string): Promise<IMessageEntity | null> {
-    return Message.findOne({ _id }).lean();
+  async getOne(sender: string, receiver: string): Promise<IMessageEntity | null> {
+    return Message.findOne({
+      $or: [
+        { sender, receiver },
+        { receiver: sender, sender: receiver },
+      ],
+    }).lean();
   }
 
-  async getOneWithDetails(_id: string, owner: string): Promise<IFullMessageEntity[]> {
-    const data: types.IFullMessageRaw[] = await Message.aggregate([
-      {
-        $match: { owner: new mongoose.Types.ObjectId(owner), _id: new mongoose.Types.ObjectId(_id) },
-      },
-      {
-        $lookup: {
-          from: EDbCollections.MessageDetails,
-          localField: 'body',
-          foreignField: '_id',
-          as: 'details',
-        },
-      },
-    ]);
-
-    if (!data || data.length === 0) return [];
-
-    return data.map((elm) => {
-      return { ...elm, details: elm.details[0] } as IFullMessageEntity;
-    });
+  async getOneByChatId(chatId: string, sender: string): Promise<IMessageEntity | null> {
+    return Message.findOne({ chatId, sender }).lean();
   }
 
-  async getUnreadWithDetails(owner: string, page: number): Promise<IFullMessageEntity[]> {
-    const data = (await Message.aggregate([
-      {
-        $match: { owner: new mongoose.Types.ObjectId(owner), read: false },
-      },
-      {
-        $lookup: {
-          from: EDbCollections.MessageDetails,
-          localField: 'body',
-          foreignField: '_id',
-          as: 'details',
-        },
-      },
-    ])
+  async getUnread(owner: string, type: EMessageTargets, page: number): Promise<IMessageEntity[]> {
+    return Message.find({ $or: [{ sender: owner }, { receiver: owner }], read: false, type })
       .limit(20)
-      .skip((page - 1) * 20)) as types.IFullMessageRaw[];
-
-    if (!data || data.length === 0) return [];
-
-    return data.map((elm) => {
-      return { ...elm, details: elm.details[0] } as IFullMessageEntity;
-    });
+      .skip((page - 1) * 20)
+      .lean();
   }
 
-  async update(_id: string, data: types.IObjectUpdate<IMessageEntity, keyof IMessageEntity>): Promise<void> {
-    await Message.updateOne({ _id }, { $set: { ...data } }, { upsert: true });
+  async update(
+    { chatId, sender }: IMessageEntity,
+    data: types.IObjectUpdate<IMessageEntity, keyof IMessageEntity>,
+  ): Promise<void> {
+    await Message.updateMany({ chatId, sender }, { $set: { ...data } }, { upsert: true });
   }
 }

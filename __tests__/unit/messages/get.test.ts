@@ -5,7 +5,7 @@ import { IGetMessageDto } from '../../../src/modules/messages/dto';
 
 describe('Message - get', () => {
   const get: IGetMessageDto = { page: 1 };
-  const getWithData: IGetMessageDto = { message: '63e55edbe8a800060911121d', page: 1 };
+  const getWithData: IGetMessageDto = { target: '63e55edbe8a800060911121d', page: 1 };
 
   describe('Should throw', () => {
     describe('No data passed', () => {
@@ -27,12 +27,12 @@ describe('Message - get', () => {
         expect(func).toThrow(new errors.IncorrectArgTypeError('Page should be number'));
       });
 
-      it(`Message incorrect type`, () => {
+      it(`Target incorrect type`, () => {
         const clone = structuredClone(getWithData);
-        clone.message = 'bc';
+        clone.target = 'bc';
         const func = () => Validation.validateGetMessage(clone);
 
-        expect(func).toThrow(new errors.IncorrectArgTypeError('Message should be 24 characters string'));
+        expect(func).toThrow(new errors.IncorrectArgTypeError('Elm target should be 24 characters'));
       });
     });
   });

@@ -1,4 +1,5 @@
 import State from '../../tools/state';
+import type { EMessageTargets } from '../../enums';
 import * as enums from '../../enums';
 import type { ILocalUser } from '../../types';
 import HandlerFactory from '../../tools/abstract/handler';
@@ -16,13 +17,13 @@ export default class UserHandler extends HandlerFactory<EModules.Messages> {
     return State.Broker.send(user.tempId, data, enums.EMessageTypes.Send);
   }
 
-  async getUnread(payload: unknown, user: ILocalUser): Promise<void> {
-    const data = await this.controller.getUnread(payload as IGetMessageDto, user.userId);
+  async getUnread(payload: unknown, type: EMessageTargets, user: ILocalUser): Promise<void> {
+    const data = await this.controller.getUnread(payload as IGetMessageDto, type, user.userId);
     return State.Broker.send(user.tempId, data, enums.EMessageTypes.Send);
   }
 
-  async send(payload: unknown, user: ILocalUser): Promise<void> {
-    await this.controller.send(payload as ISendMessageDto);
+  async send(payload: unknown, type: EMessageTargets, user: ILocalUser): Promise<void> {
+    await this.controller.send(payload as ISendMessageDto, type);
     return State.Broker.send(user.tempId, undefined, enums.EMessageTypes.Send);
   }
 

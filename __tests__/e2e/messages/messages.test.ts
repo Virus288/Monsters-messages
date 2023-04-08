@@ -3,7 +3,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import { ILocalUser } from '../../../src/types';
 import Controller from '../../../src/modules/messages/controller';
-import { EUserTypes } from '../../../src/enums';
+import { EMessageTargets, EUserTypes } from '../../../src/enums';
 import * as errors from '../../../src/errors';
 import fakeData from '../../utils/fakeData.json';
 import { IMessageEntity } from '../../../src/modules/messages/entity';
@@ -23,9 +23,9 @@ describe('Messages', () => {
     validated: true,
     type: EUserTypes.User,
   };
-  const get: IGetMessageDto = { page: 1, message: fakeMessage._id };
+  const get: IGetMessageDto = { page: 1, target: fakeMessage.chatId };
   const getMany: IGetMessageDto = { page: 1 };
-  const read: IReadMessageDto = { message: fakeMessage._id, page: 1 };
+  const read: IReadMessageDto = { id: fakeMessage.chatId, user: fakeMessage.sender };
   const send: ISendMessageDto = {
     body: fakeDetails.message,
     receiver: fakeMessage.receiver,
@@ -52,31 +52,31 @@ describe('Messages', () => {
       it(`Get one - missing page`, () => {
         const clone = structuredClone(get);
         clone.page = undefined!;
-        controller.get(clone, localUser.userId).catch((err) => {
+        controller.get(clone, EMessageTargets.Messages).catch((err) => {
           expect(err).toEqual(new errors.MissingArgError('page'));
         });
       });
 
-      it(`Read - missing page`, () => {
+      it(`Read - missing user`, () => {
         const clone = structuredClone(read);
-        clone.page = undefined!;
+        clone.user = undefined!;
         controller.read(clone).catch((err) => {
-          expect(err).toEqual(new errors.MissingArgError('page'));
+          expect(err).toEqual(new errors.MissingArgError('user'));
         });
       });
 
-      it(`Read - missing message`, () => {
+      it(`Read - missing id`, () => {
         const clone = structuredClone(read);
-        clone.message = undefined!;
+        clone.id = undefined!;
         controller.read(clone).catch((err) => {
-          expect(err).toEqual(new errors.MissingArgError('message'));
+          expect(err).toEqual(new errors.MissingArgError('id'));
         });
       });
 
       it(`Send - missing body`, () => {
         const clone = structuredClone(send);
         clone.body = undefined!;
-        controller.send(clone).catch((err) => {
+        controller.send(clone, EMessageTargets.Messages).catch((err) => {
           expect(err).toEqual(new errors.MissingArgError('body'));
         });
       });
@@ -84,7 +84,7 @@ describe('Messages', () => {
       it(`Send - missing receiver`, () => {
         const clone = structuredClone(send);
         clone.receiver = undefined!;
-        controller.send(clone).catch((err) => {
+        controller.send(clone, EMessageTargets.Messages).catch((err) => {
           expect(err).toEqual(new errors.MissingArgError('receiver'));
         });
       });
@@ -92,7 +92,7 @@ describe('Messages', () => {
       it(`Send - missing sender`, () => {
         const clone = structuredClone(send);
         clone.sender = undefined!;
-        controller.send(clone).catch((err) => {
+        controller.send(clone, EMessageTargets.Messages).catch((err) => {
           expect(err).toEqual(new errors.MissingArgError('sender'));
         });
       });
@@ -100,7 +100,7 @@ describe('Messages', () => {
       it(`Get many - missing page`, () => {
         const clone = structuredClone(getMany);
         clone.page = undefined!;
-        controller.get(clone, localUser.userId).catch((err) => {
+        controller.get(clone, EMessageTargets.Messages).catch((err) => {
           expect(err).toEqual(new errors.MissingArgError('page'));
         });
       });
@@ -108,7 +108,7 @@ describe('Messages', () => {
       it(`Get unread - missing page`, () => {
         const clone = structuredClone(getMany);
         clone.page = undefined!;
-        controller.getUnread(clone, localUser.userId).catch((err) => {
+        controller.getUnread(clone, EMessageTargets.Messages, localUser.userId).catch((err) => {
           expect(err).toEqual(new errors.MissingArgError('page'));
         });
       });
@@ -136,26 +136,26 @@ describe('Messages', () => {
         const clone = structuredClone(get);
         clone.page = 'asd' as unknown as number;
 
-        controller.get(clone, localUser.userId).catch((err) => {
+        controller.get(clone, EMessageTargets.Messages).catch((err) => {
           expect(err).toEqual(new errors.IncorrectArgTypeError('Page should be number'));
         });
       });
 
-      it(`Read - page incorrect type`, () => {
+      it(`Read - user incorrect type`, () => {
         const clone = structuredClone(read);
-        clone.page = 'asd' as unknown as number;
+        clone.user = 'asd';
 
         controller.read(clone).catch((err) => {
-          expect(err).toEqual(new errors.IncorrectArgTypeError('Page should be number'));
+          expect(err).toEqual(new errors.IncorrectArgTypeError('User should be number'));
         });
       });
 
-      it(`Read - message incorrect type`, () => {
+      it(`Read - id incorrect type`, () => {
         const clone = structuredClone(read);
-        clone.message = 'asd';
+        clone.id = 'asd';
 
         controller.read(clone).catch((err) => {
-          expect(err).toEqual(new errors.IncorrectArgTypeError('Message should be 24 characters string'));
+          expect(err).toEqual(new errors.IncorrectArgTypeError('Id should be 24 characters string'));
         });
       });
 
@@ -163,7 +163,7 @@ describe('Messages', () => {
         const clone = structuredClone(send);
         clone.body = 'a';
 
-        controller.send(clone).catch((err) => {
+        controller.send(clone, EMessageTargets.Messages).catch((err) => {
           expect(err).toEqual(new errors.IncorrectArgLengthError('Message', 2, 1000));
         });
       });
@@ -172,7 +172,7 @@ describe('Messages', () => {
         const clone = structuredClone(send);
         clone.receiver = 'abc';
 
-        controller.send(clone).catch((err) => {
+        controller.send(clone, EMessageTargets.Messages).catch((err) => {
           expect(err).toEqual(new errors.IncorrectArgTypeError('Receiver should be 24 characters string'));
         });
       });
@@ -181,7 +181,7 @@ describe('Messages', () => {
         const clone = structuredClone(send);
         clone.sender = 'abc';
 
-        controller.send(clone).catch((err) => {
+        controller.send(clone, EMessageTargets.Messages).catch((err) => {
           expect(err).toEqual(new errors.IncorrectArgTypeError('Sender should be 24 characters string'));
         });
       });
@@ -190,7 +190,7 @@ describe('Messages', () => {
         const clone = structuredClone(getMany);
         clone.page = 'a' as unknown as number;
 
-        controller.get(clone, localUser.userId).catch((err) => {
+        controller.get(clone, EMessageTargets.Messages).catch((err) => {
           expect(err).toEqual(new errors.IncorrectArgTypeError('Page should be number'));
         });
       });
@@ -199,7 +199,7 @@ describe('Messages', () => {
         const clone = structuredClone(getMany);
         clone.page = 'abc' as unknown as number;
 
-        controller.getUnread(clone, localUser.userId).catch((err) => {
+        controller.getUnread(clone, EMessageTargets.Messages, localUser.userId).catch((err) => {
           expect(err).toEqual(new errors.IncorrectArgTypeError('Page should be number'));
         });
       });
@@ -233,7 +233,7 @@ describe('Messages', () => {
     });
 
     it(`Get one`, async () => {
-      const data = await controller.get(get, localUser.userId);
+      const data = await controller.get(get, EMessageTargets.Messages);
       const elm = data[0]!;
 
       expect(data.length).toEqual(1);
@@ -243,23 +243,20 @@ describe('Messages', () => {
       expect(elm.receiver.toString()).toEqual(fakeMessage.receiver);
       expect(elm.owner.toString()).toEqual(fakeMessage.owner);
       expect(elm.sender.toString()).toEqual(fakeMessage.sender);
-      expect(elm.details.message).toEqual(fakeDetails.message);
     });
 
     it(`Get many`, async () => {
-      const data = await controller.get(getMany, localUser.userId);
+      const data = (await controller.get(getMany, EMessageTargets.Messages)) as IMessageEntity[];
       const elm = data[0]!;
       const elm2 = data[1]!;
 
       expect(data.length).toEqual(2);
       expect(elm._id.toString()).toEqual(fakeMessage._id);
       expect(elm2._id.toString()).toEqual(fakeMessage2._id);
-      expect(elm.details.message).toEqual(fakeDetails.message);
-      expect(elm2.details.message).toEqual(fakeDetails2.message);
     });
 
     it(`Get unread`, async () => {
-      const data = await controller.getUnread(getMany, localUser.userId);
+      const data = await controller.getUnread(getMany, EMessageTargets.Messages, localUser.userId);
       const elm = data[0]!;
 
       expect(data.length).toEqual(1);
@@ -267,18 +264,18 @@ describe('Messages', () => {
     });
 
     it(`Read`, async () => {
-      const before = await controller.getUnread(getMany, localUser.userId);
+      const before = await controller.getUnread(getMany, EMessageTargets.Messages, localUser.userId);
       expect(before.length).toEqual(1);
 
       await controller.read(read);
 
-      const after = await controller.getUnread(getMany, localUser.userId);
+      const after = await controller.getUnread(getMany, EMessageTargets.Messages, localUser.userId);
       expect(after.length).toEqual(0);
     });
 
     it(`Send`, async () => {
-      await controller.send(send);
-      const data = await controller.get(getMany, localUser.userId);
+      await controller.send(send, EMessageTargets.Messages);
+      const data = await controller.get(getMany, EMessageTargets.Messages);
       expect(data.length).toEqual(3);
     });
   });

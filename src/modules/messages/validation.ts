@@ -15,22 +15,24 @@ export default class Validator {
     if (typeof page !== 'number') throw new errors.IncorrectArgTypeError('Page should be number');
     if (page <= 0 || page > 1000) throw new errors.IncorrectArgLengthError('page', 0, 1000);
 
-    if (data.message !== undefined) {
-      if (data.message.length !== 24) throw new errors.IncorrectArgTypeError('Message should be 24 characters string');
-      const isValid = mongoose.Types.ObjectId.isValid(data.message);
-      if (!isValid) throw new errors.IncorrectArgTypeError('Message is not valid id');
+    if (data.target !== undefined) {
+      if (data.target.length !== 24) throw new errors.IncorrectArgLengthError('target', 24, 24);
+      const isValid = mongoose.Types.ObjectId.isValid(data.target);
+      if (!isValid) throw new errors.IncorrectArgTypeError('Target is not valid id');
     }
   }
 
   static validateReadMessage(data: IReadMessageDto): void {
-    if (data.message === undefined) throw new errors.MissingArgError('message');
-    this.validateGetMessage(data);
+    if (data.id === undefined) throw new errors.MissingArgError('id');
+    if (data.user === undefined) throw new errors.MissingArgError('user');
+
+    if (data.user.length !== 24) throw new errors.IncorrectArgLengthError('user', 24, 24);
+    if (data.id.length !== 24) throw new errors.IncorrectArgLengthError('id', 24, 24);
   }
 
   static validateDetails(messageBody: string): void {
     if (!messageBody) throw new errors.MissingArgError('body');
-    if (messageBody.length < 2 || messageBody.length > 1000)
-      throw new errors.IncorrectArgLengthError('Message', 2, 1000);
+    if (messageBody.length < 2 || messageBody.length > 1000) throw new errors.IncorrectArgLengthError('Body', 2, 1000);
   }
 
   static validateMessage(data: ISendMessageDto): void {

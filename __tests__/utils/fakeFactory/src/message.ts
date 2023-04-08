@@ -3,6 +3,7 @@ import type { EFakeData } from '../enums';
 import Message from '../../../../src/modules/messages/model';
 import type { IAbstractBody } from '../types/data';
 import { IMessageEntity } from '../../../../src/modules/messages/entity';
+import { EMessageTargets } from '../../../../src/enums';
 
 export default class FakeMessage extends TemplateFactory<EFakeData.Message> implements IAbstractBody<IMessageEntity> {
   constructor() {
@@ -39,6 +40,21 @@ export default class FakeMessage extends TemplateFactory<EFakeData.Message> impl
     return this;
   }
 
+  modified(modified: number): this {
+    this.state.modified = modified;
+    return this;
+  }
+
+  type(type: EMessageTargets): this {
+    this.state.type = type;
+    return this;
+  }
+
+  chatId(id?: string): this {
+    this.state.chatId = id;
+    return this;
+  }
+
   protected fillState(): void {
     this.state = {
       _id: undefined,
@@ -47,6 +63,9 @@ export default class FakeMessage extends TemplateFactory<EFakeData.Message> impl
       read: false,
       sender: undefined,
       receiver: undefined,
+      type: EMessageTargets.Messages,
+      modified: 0,
+      chatId: undefined,
     };
   }
 }

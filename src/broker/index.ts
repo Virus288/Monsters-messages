@@ -121,8 +121,8 @@ export default class Broker {
         if (payload.target === enums.EMessageTypes.Heartbeat) {
           this.sendHeartBeat(enums.EServices.Messages, enums.EMessageTypes.Heartbeat);
         } else {
-          this._queue[payload.user.userId ?? payload.user.tempId] = payload;
-          this.errorWrapper(async () => this.router.handleMessage(payload), payload.user.userId ?? payload.user.tempId);
+          this._queue[payload.user.tempId] = payload;
+          this.errorWrapper(async () => this.router.handleMessage(payload), payload.user.tempId);
         }
       },
       { noAck: true },
