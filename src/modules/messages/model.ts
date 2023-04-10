@@ -13,10 +13,6 @@ export const messageSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       required: [true, 'Please provide message receiver'],
     },
-    owner: {
-      type: mongoose.Types.ObjectId,
-      required: [true, 'Please provide message owner'],
-    },
     body: {
       type: mongoose.Types.ObjectId,
       required: [true, 'Message body not provided'],
@@ -35,8 +31,8 @@ export const messageSchema = new mongoose.Schema(
       required: [true, 'ChatId not provided'],
     },
   },
-  { timestamps: true, collection: enums.EDbCollections.Messages },
+  { timestamps: true },
 );
 
-const Message = mongoose.model<type.IMessage>('Message', messageSchema);
+const Message = mongoose.model<type.IMessage>('Message', messageSchema, enums.EDbCollections.Messages);
 export default Message;

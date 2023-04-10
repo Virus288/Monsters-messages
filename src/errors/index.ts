@@ -128,3 +128,13 @@ export class MissingMessageError extends FullError {
     this.status = 400;
   }
 }
+
+export class MessageAlreadyRead extends FullError {
+  constructor() {
+    super('MessageAlreadyRead');
+    this.message = 'Targeted message already read';
+    this.name = 'MessageAlreadyRead';
+    this.code = '013';
+    this.status = 400;
+  }
+}

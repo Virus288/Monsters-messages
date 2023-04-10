@@ -40,11 +40,6 @@ export default class FakeMessage extends TemplateFactory<EFakeData.Message> impl
     return this;
   }
 
-  modified(modified: number): this {
-    this.state.modified = modified;
-    return this;
-  }
-
   type(type: EMessageTargets): this {
     this.state.type = type;
     return this;
@@ -64,7 +59,6 @@ export default class FakeMessage extends TemplateFactory<EFakeData.Message> impl
       sender: undefined,
       receiver: undefined,
       type: EMessageTargets.Messages,
-      modified: 0,
       chatId: undefined,
     };
   }

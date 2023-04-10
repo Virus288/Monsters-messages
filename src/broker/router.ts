@@ -3,16 +3,23 @@ import * as enums from '../enums';
 import { EMessageTargets } from '../enums';
 import * as errors from '../errors';
 import MessagesController from '../modules/messages/handler';
+import ChatController from '../modules/chat/handler';
 
 export default class Router {
   private readonly _messages: MessagesController;
+  private readonly _chat: ChatController;
 
   constructor() {
     this._messages = new MessagesController();
+    this._chat = new ChatController();
   }
 
   private get messages(): MessagesController {
     return this._messages;
+  }
+
+  private get chat(): ChatController {
+    return this._chat;
   }
 
   async handleMessage(payload: types.IRabbitMessage): Promise<void> {
@@ -44,13 +51,13 @@ export default class Router {
   private async chatMessage(payload: types.IRabbitMessage): Promise<void> {
     switch (payload.subTarget) {
       case enums.EMessagesTargets.Get:
-        return this.messages.get(payload.payload, payload.user);
+        return this.chat.get(payload.payload, payload.user);
       case enums.EMessagesTargets.GetUnread:
-        return this.messages.getUnread(payload.payload, EMessageTargets.Chat, payload.user);
+        return this.chat.getUnread(payload.payload, EMessageTargets.Chat, payload.user);
       case enums.EMessagesTargets.Send:
-        return this.messages.send(payload.payload, EMessageTargets.Chat, payload.user);
+        return this.chat.send(payload.payload, EMessageTargets.Chat, payload.user);
       case enums.EMessagesTargets.Read:
-        return this.messages.read(payload.payload, payload.user);
+        return this.chat.read(payload.payload, payload.user);
       default:
         throw new errors.IncorrectTargetError();
     }

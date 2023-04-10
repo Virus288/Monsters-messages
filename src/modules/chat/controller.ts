@@ -1,17 +1,17 @@
 import Rooster from './rooster';
 import Details from '../messagesDetails/controller';
 import * as errors from '../../errors';
-import Validator from './validation';
-import type { IFullMessageEntity } from './entity';
-import type { IGetMessageDto, IReadMessageDto, ISendMessageDto } from './dto';
+import Validator from '../messages/validation';
+import type { IFullMessageEntity } from '../messages/entity';
+import type { IGetMessageDto, IReadMessageDto, ISendMessageDto } from '../messages/dto';
 import ControllerFactory from '../../tools/abstract/controller';
 import type { EModules } from '../../tools/abstract/enums';
 import type { EMessageTargets } from '../../enums';
 import mongoose from 'mongoose';
-import { formGetMessages, formUnreadMessages } from './utils';
+import { formGetMessages, formUnreadMessages } from '../messages/utils';
 import type { IUnreadMessage, IPreparedMessagesBody } from '../../types';
 
-export default class Controller extends ControllerFactory<EModules.Messages> {
+export default class Controller extends ControllerFactory<EModules.Chat> {
   private readonly _details: Details;
 
   constructor() {
