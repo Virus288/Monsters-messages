@@ -43,7 +43,7 @@ describe('Message - send', () => {
         clone.receiver = 'asd';
         const func = () => Validation.validateNewMessage(clone);
 
-        expect(func).toThrow(new errors.IncorrectArgTypeError('Receiver should be 24 characters string'));
+        expect(func).toThrow(new errors.IncorrectArgLengthError('receiver', 24, 24));
       });
 
       it(`Sender incorrect type`, () => {
@@ -51,7 +51,7 @@ describe('Message - send', () => {
         clone.sender = 'asd';
         const func = () => Validation.validateNewMessage(clone);
 
-        expect(func).toThrow(new errors.IncorrectArgTypeError('Sender should be 24 characters string'));
+        expect(func).toThrow(new errors.IncorrectArgLengthError('sender', 24, 24));
       });
     });
   });

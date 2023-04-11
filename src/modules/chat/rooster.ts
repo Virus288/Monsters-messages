@@ -1,4 +1,4 @@
-import Message from './model';
+import Chat from './model';
 import type * as types from '../../types';
 import type { EMessageTargets } from '../../enums';
 import { EDbCollections } from '../../enums';
@@ -9,16 +9,16 @@ import type {
   IGetOneMessageEntity,
   IMessageEntity,
   IUnreadMessageEntity,
-} from './entity';
+} from '../messages/entity';
 
 export default class Rooster {
   async add(data: types.INewMessage): Promise<void> {
-    const NewMessage = new Message(data);
+    const NewMessage = new Chat(data);
     await NewMessage.save();
   }
 
   async get(owner: string, page: number): Promise<IGetMessageEntity[]> {
-    return Message.find({ $or: [{ sender: owner }, { receiver: owner }] })
+    return Chat.find({ $or: [{ sender: owner }, { receiver: owner }] })
       .select({
         _id: false,
         sender: true,
@@ -32,7 +32,7 @@ export default class Rooster {
   }
 
   async getWithDetails(chatId: string, page: number): Promise<IFullMessageEntity[]> {
-    const data = (await Message.aggregate([
+    const data = (await Chat.aggregate([
       {
         $match: { chatId: new mongoose.Types.ObjectId(chatId) },
       },
@@ -65,7 +65,7 @@ export default class Rooster {
    * Get one message with selected sender and receiver. Currently used to validate if user ever had conversation
    */
   async getOne(sender: string, receiver: string): Promise<{ chatId: string } | null> {
-    return Message.findOne({
+    return Chat.findOne({
       $or: [
         { sender, receiver },
         { receiver: sender, sender: receiver },
@@ -76,7 +76,7 @@ export default class Rooster {
   }
 
   async getOneByChatId(chatId: string, receiver: string): Promise<IGetOneMessageEntity | null> {
-    return Message.findOne({ chatId, receiver })
+    return Chat.findOne({ chatId, receiver })
       .select({
         read: true,
         chatId: true,
@@ -86,7 +86,7 @@ export default class Rooster {
   }
 
   async getUnread(owner: string, type: EMessageTargets, page: number): Promise<IUnreadMessageEntity[]> {
-    return Message.find({ $or: [{ sender: owner }, { receiver: owner }], read: false, type })
+    return Chat.find({ $or: [{ sender: owner }, { receiver: owner }], read: false, type })
       .select({ chatId: true, sender: true, receiver: true, createdAt: true })
       .sort({ createdAt: 1 })
       .limit(100)
@@ -99,6 +99,6 @@ export default class Rooster {
     sender: string,
     data: types.IObjectUpdate<IMessageEntity, keyof IMessageEntity>,
   ): Promise<void> {
-    await Message.updateMany({ chatId, sender }, { $set: { ...data } }, { upsert: true });
+    await Chat.updateMany({ chatId, sender }, { $set: { ...data } }, { upsert: true });
   }
 }

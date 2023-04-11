@@ -15,11 +15,12 @@ const fulfillDatabase = async (): Promise<void> => {
   await Promise.all(
     messages.map(async (m) => {
       const db = new Database();
-      await db.message
-        ._id(m._id)
+      await db.chat
         .sender(m.sender)
         .body(m.body)
-        .owner(m.owner)
+        .chatId(m.chatId)
+        .type(m.type)
+        ._id(m._id)
         .read(m.read)
         .receiver(m.receiver)
         .create();

@@ -2,4 +2,5 @@
 export enum EDbCollections {
   MessageDetails = 'messageDetails',
   Messages = 'messages',
+  Chats = 'chats',
 }

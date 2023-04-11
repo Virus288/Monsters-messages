@@ -2,4 +2,5 @@
 export enum EModules {
   Messages = 'messages',
   MessageDetails = 'messageDetails',
+  Chat = 'chat',
 }

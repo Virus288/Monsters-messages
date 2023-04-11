@@ -1,32 +1,38 @@
 import mongoose from 'mongoose';
 import type * as type from '../../types';
 import * as enums from '../../enums';
+import { EMessageTargets } from '../../enums';
 
 export const messageSchema = new mongoose.Schema(
   {
     sender: {
       type: mongoose.Types.ObjectId,
-      required: [true, 'Message sender not provided'],
+      required: [true, 'sender not provided'],
     },
     receiver: {
       type: mongoose.Types.ObjectId,
-      required: [true, 'Please provide message receiver'],
-    },
-    owner: {
-      type: mongoose.Types.ObjectId,
-      required: [true, 'Please provide message owner'],
+      required: [true, 'receiver not provided'],
     },
     body: {
       type: mongoose.Types.ObjectId,
-      required: [true, 'Message body not provided'],
+      required: [true, 'body not provided'],
     },
     read: {
       type: Boolean,
       default: false,
     },
+    type: {
+      type: String,
+      enum: Object.values(EMessageTargets),
+      default: EMessageTargets.Messages,
+    },
+    chatId: {
+      type: mongoose.Types.ObjectId,
+      required: [true, 'chatId not provided'],
+    },
   },
-  { timestamps: true, collection: enums.EDbCollections.Messages },
+  { timestamps: true },
 );
 
-const Message = mongoose.model<type.IMessage>('Message', messageSchema);
+const Message = mongoose.model<type.IMessage>('Message', messageSchema, enums.EDbCollections.Messages);
 export default Message;

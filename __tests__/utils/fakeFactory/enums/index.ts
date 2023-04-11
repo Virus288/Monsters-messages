@@ -2,4 +2,5 @@
 export enum EFakeData {
   Message = 'message',
   MessageDetails = 'messageDetails',
+  Chat = 'chat',
 }

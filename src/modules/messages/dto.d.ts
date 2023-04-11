@@ -6,9 +6,10 @@ export interface ISendMessageDto {
 
 export interface IGetMessageDto {
   page: number;
-  message?: string;
+  target?: string;
 }
 
-export interface IReadMessageDto extends IGetMessageDto {
-  message: string;
+export interface IReadMessageDto {
+  chatId: string;
+  user: string;
 }

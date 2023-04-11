@@ -9,11 +9,18 @@ export default class Rooster {
     return document._id;
   }
 
-  async get(ids: string[]): Promise<IMessageDetailsEntity> {
+  async get(ids: string[]): Promise<IMessageDetailsEntity[]> {
     return Details.find({
       _id: {
         $in: ids,
       },
     }).lean();
+  }
+
+  async getAll(page: number): Promise<IMessageDetailsEntity[]> {
+    return Details.find({})
+      .limit(100)
+      .skip((page - 1) * 100)
+      .lean();
   }
 }

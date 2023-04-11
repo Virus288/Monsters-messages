@@ -5,9 +5,9 @@ import type { ILocalUser } from '../../types';
 import HandlerFactory from '../../tools/abstract/handler';
 import type { EModules } from '../../tools/abstract/enums';
 import Controller from './controller';
-import type { IGetMessageDto, IReadMessageDto, ISendMessageDto } from './dto';
+import type { IGetMessageDto, IReadMessageDto, ISendMessageDto } from '../messages/dto';
 
-export default class UserHandler extends HandlerFactory<EModules.Messages> {
+export default class UserHandler extends HandlerFactory<EModules.Chat> {
   constructor() {
     super(new Controller());
   }

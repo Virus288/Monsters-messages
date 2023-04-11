@@ -90,7 +90,9 @@ export class IncorrectArgLengthError extends FullError {
     this.message =
       min === undefined
         ? `Elm ${target} should be less than ${max} characters`
-        : `Elm ${target} should be more than ${min} and less than ${max} characters`;
+        : min !== max
+        ? `Elm ${target} should be more than ${min} and less than ${max} characters`
+        : `Elm ${target} should be ${min} characters`;
     this.name = 'IncorrectArgLengthError';
     this.code = '009';
     this.status = 400;
@@ -123,6 +125,16 @@ export class MissingMessageError extends FullError {
     this.message = 'Targeted message does not exist';
     this.name = 'MissingMessageError';
     this.code = '012';
+    this.status = 400;
+  }
+}
+
+export class MessageAlreadyRead extends FullError {
+  constructor() {
+    super('MessageAlreadyRead');
+    this.message = 'Targeted message already read';
+    this.name = 'MessageAlreadyRead';
+    this.code = '013';
     this.status = 400;
   }
 }

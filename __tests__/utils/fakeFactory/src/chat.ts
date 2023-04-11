@@ -1,13 +1,13 @@
 import TemplateFactory from './abstracts';
 import type { EFakeData } from '../enums';
-import Message from '../../../../src/modules/messages/model';
 import type { IAbstractBody } from '../types/data';
 import { IMessageEntity } from '../../../../src/modules/messages/entity';
 import { EMessageTargets } from '../../../../src/enums';
+import Chat from '../../../../src/modules/chat/model';
 
-export default class FakeMessage extends TemplateFactory<EFakeData.Message> implements IAbstractBody<IMessageEntity> {
+export default class FakeChat extends TemplateFactory<EFakeData.Chat> implements IAbstractBody<IMessageEntity> {
   constructor() {
-    super(Message);
+    super(Chat);
   }
 
   _id(id: string): this {
