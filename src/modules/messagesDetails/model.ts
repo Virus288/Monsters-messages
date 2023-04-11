@@ -5,7 +5,7 @@ import * as enums from '../../enums';
 export const detailsSchema = new mongoose.Schema({
   message: {
     type: String,
-    required: [true, 'Message not provided'],
+    required: [true, 'message not provided'],
     minlength: [2, 'Min length is 2 characters'],
     maxlength: [1000, 'Max message length is 1000 characters'],
   },

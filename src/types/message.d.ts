@@ -17,8 +17,7 @@ export interface IUnreadMessage {
   lastMessage: number;
   unread: number;
   chatId: string;
-  sender: string;
-  receiver: string;
+  participants: string[];
 }
 
 export interface IPreparedMessagesBody {

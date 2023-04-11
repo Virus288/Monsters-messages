@@ -26,7 +26,7 @@ export default class Rooster {
         type: true,
         chatId: true,
       })
-      .limit(20)
+      .limit(100)
       .skip((page - 1) * 100)
       .lean();
   }
@@ -55,7 +55,7 @@ export default class Rooster {
         },
       },
     ])
-      .limit(20)
+      .limit(100)
       .skip((page - 1) * 100)) as IFullMessageEntity[];
 
     return !data || data.length === 0 ? [] : data;
@@ -89,7 +89,7 @@ export default class Rooster {
     return Message.find({ $or: [{ sender: owner }, { receiver: owner }], read: false, type })
       .select({ chatId: true, sender: true, receiver: true, createdAt: true })
       .sort({ createdAt: 1 })
-      .limit(20)
+      .limit(100)
       .skip((page - 1) * 100)
       .lean();
   }

@@ -1,16 +1,17 @@
 import type { IGetMessageEntity, IUnreadMessageEntity } from './entity';
 import type { IPreparedMessages, IPreparedMessagesBody, IUnreadMessage } from '../../types';
 
-export const formUnreadMessages = (data: IUnreadMessageEntity[]): IUnreadMessage[] => {
+export const formUnreadMessages = (data: IUnreadMessageEntity[], user: string): IUnreadMessage[] => {
   const prepared: Record<string, IUnreadMessage> = {};
 
   data.forEach((d) => {
+    if (d.receiver.toString() !== user) return;
+
     prepared[d.chatId] === undefined
       ? (prepared[d.chatId] = {
           chatId: d.chatId,
           lastMessage: Date.parse(d.createdAt).valueOf(),
-          receiver: d.receiver,
-          sender: d.sender,
+          participants: [d.receiver.toString(), d.sender.toString()],
           unread: 0,
         })
       : null;

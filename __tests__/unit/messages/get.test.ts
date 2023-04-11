@@ -24,7 +24,7 @@ describe('Message - get', () => {
         clone.page = 'bc' as unknown as number;
         const func = () => Validation.validateGetMessage(clone);
 
-        expect(func).toThrow(new errors.IncorrectArgTypeError('Page should be number'));
+        expect(func).toThrow(new errors.IncorrectArgTypeError('page should be number'));
       });
 
       it(`Target incorrect type`, () => {

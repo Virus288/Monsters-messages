@@ -8,6 +8,6 @@ export enum EMessagesTargets {
 }
 
 export enum EMessageTargets {
-  Messages = 'messages',
+  Messages = 'message',
   Chat = 'chat',
 }

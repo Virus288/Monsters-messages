@@ -2,14 +2,14 @@ import Rooster from './rooster';
 import Details from '../messagesDetails/controller';
 import * as errors from '../../errors';
 import Validator from './validation';
-import type { IFullMessageEntity } from './entity';
+import type { IFullMessageEntity, IGetMessageEntity } from './entity';
 import type { IGetMessageDto, IReadMessageDto, ISendMessageDto } from './dto';
 import ControllerFactory from '../../tools/abstract/controller';
 import type { EModules } from '../../tools/abstract/enums';
 import type { EMessageTargets } from '../../enums';
 import mongoose from 'mongoose';
 import { formGetMessages, formUnreadMessages } from './utils';
-import type { IUnreadMessage, IPreparedMessagesBody } from '../../types';
+import type { IPreparedMessagesBody, IUnreadMessage } from '../../types';
 
 export default class Controller extends ControllerFactory<EModules.Messages> {
   private readonly _details: Details;
@@ -35,12 +35,16 @@ export default class Controller extends ControllerFactory<EModules.Messages> {
     return formGetMessages(messages);
   }
 
+  async test(userId: string): Promise<IGetMessageEntity[]> {
+    return this.rooster.get(userId, 1);
+  }
+
   async getUnread(payload: IGetMessageDto, type: EMessageTargets, userId: string): Promise<IUnreadMessage[]> {
     Validator.validateGetMessage(payload);
     const { page } = payload;
 
     const messages = await this.rooster.getUnread(userId, type, page);
-    return formUnreadMessages(messages);
+    return formUnreadMessages(messages, userId);
   }
 
   async send(payload: ISendMessageDto, type: EMessageTargets): Promise<void> {
@@ -57,9 +61,9 @@ export default class Controller extends ControllerFactory<EModules.Messages> {
 
   async read(payload: IReadMessageDto): Promise<void> {
     Validator.validateReadMessage(payload);
-    const { id, user } = payload;
+    const { chatId, user } = payload;
 
-    const unread = await this.rooster.getOneByChatId(id, user);
+    const unread = await this.rooster.getOneByChatId(chatId, user);
     if (!unread) throw new errors.MissingMessageError();
     if (unread.read) throw new errors.MessageAlreadyRead();
 

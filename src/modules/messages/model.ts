@@ -7,15 +7,15 @@ export const messageSchema = new mongoose.Schema(
   {
     sender: {
       type: mongoose.Types.ObjectId,
-      required: [true, 'Message sender not provided'],
+      required: [true, 'sender not provided'],
     },
     receiver: {
       type: mongoose.Types.ObjectId,
-      required: [true, 'Please provide message receiver'],
+      required: [true, 'receiver not provided'],
     },
     body: {
       type: mongoose.Types.ObjectId,
-      required: [true, 'Message body not provided'],
+      required: [true, 'body not provided'],
     },
     read: {
       type: Boolean,
@@ -28,7 +28,7 @@ export const messageSchema = new mongoose.Schema(
     },
     chatId: {
       type: mongoose.Types.ObjectId,
-      required: [true, 'ChatId not provided'],
+      required: [true, 'chatId not provided'],
     },
   },
   { timestamps: true },
