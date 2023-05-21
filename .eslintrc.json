@@ -65,6 +65,42 @@
     "import/prefer-default-export": 2,
     "import/no-extraneous-dependencies": 2,
     "import/no-unresolved": 2,
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          [
+            "external"
+          ],
+          [
+            "index",
+            "sibling",
+            "parent"
+          ],
+          "type"
+        ],
+        "newlines-between": "ignore",
+        "alphabetize": {
+          "caseInsensitive": true,
+          "order": "asc"
+        },
+        "pathGroups": [
+          {
+            "group": "external",
+            "pattern": "react",
+            "position": "before"
+          },
+          {
+            "group": "external",
+            "pattern": "@my_org/**",
+            "position": "after"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": [
+          "builtin"
+        ]
+      }
+    ],
     "max-classes-per-file": 2,
     "no-await-in-loop": 2,
     "no-bitwise": 2,
@@ -257,7 +293,6 @@
     "@typescript-eslint/no-empty-function": 0,
     "@typescript-eslint/no-explicit-any": 2,
     "@typescript-eslint/no-extraneous-class": 0,
-    "@typescript-eslint/no-invalid-void-type": 0,
     "@typescript-eslint/no-non-null-assertion": 0,
     "@typescript-eslint/no-shadow": 2,
     "@typescript-eslint/no-unnecessary-condition": 0,

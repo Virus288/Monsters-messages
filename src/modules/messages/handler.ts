@@ -1,11 +1,11 @@
-import State from '../../tools/state';
-import type { EMessageTargets } from '../../enums';
-import * as enums from '../../enums';
-import type { ILocalUser } from '../../types';
-import HandlerFactory from '../../tools/abstract/handler';
-import type { EModules } from '../../tools/abstract/enums';
 import Controller from './controller';
+import * as enums from '../../enums';
+import HandlerFactory from '../../tools/abstract/handler';
+import State from '../../tools/state';
 import type { IGetMessageDto, IReadMessageDto, ISendMessageDto } from './dto';
+import type { EMessageTargets } from '../../enums';
+import type { EModules } from '../../tools/abstract/enums';
+import type { ILocalUser } from '../../types';
 
 export default class UserHandler extends HandlerFactory<EModules.Messages> {
   constructor() {
@@ -23,7 +23,7 @@ export default class UserHandler extends HandlerFactory<EModules.Messages> {
   }
 
   async send(payload: unknown, type: EMessageTargets, user: ILocalUser): Promise<void> {
-    await this.controller.send(payload as ISendMessageDto, type);
+    await this.controller.send(payload as ISendMessageDto, type, user.userId);
     return State.Broker.send(user.tempId, undefined, enums.EMessageTypes.Send);
   }
 

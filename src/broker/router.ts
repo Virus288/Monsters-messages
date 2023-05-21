@@ -1,9 +1,9 @@
-import type * as types from '../types';
 import * as enums from '../enums';
 import { EMessageTargets } from '../enums';
 import * as errors from '../errors';
-import MessagesController from '../modules/messages/handler';
 import ChatController from '../modules/chat/handler';
+import MessagesController from '../modules/messages/handler';
+import type * as types from '../types';
 
 export default class Router {
   private readonly _messages: MessagesController;

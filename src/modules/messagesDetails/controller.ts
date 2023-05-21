@@ -1,7 +1,7 @@
-import type mongoose from 'mongoose';
+import Rooster from './rooster';
 import ControllerFactory from '../../tools/abstract/controller';
 import type { EModules } from '../../tools/abstract/enums';
-import Rooster from './rooster';
+import type mongoose from 'mongoose';
 
 export default class MessageDetails extends ControllerFactory<EModules.MessageDetails> {
   constructor() {

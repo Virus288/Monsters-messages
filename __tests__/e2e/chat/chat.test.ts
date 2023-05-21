@@ -293,7 +293,7 @@ describe('Chat', () => {
     });
 
     it(`Send`, async () => {
-      await controller.send(send, EMessageTargets.Messages, localUser.userId);
+      await controller.send(send, EMessageTargets.Messages, fakeMessage.receiver);
 
       const data = await controller.get(getMany, localUser.userId);
       const key = Object.keys(data)[0]!;

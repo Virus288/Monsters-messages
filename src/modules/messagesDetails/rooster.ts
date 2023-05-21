@@ -1,6 +1,6 @@
 import Details from './model';
-import type mongoose from 'mongoose';
 import type { IMessageDetailsEntity } from './entity';
+import type mongoose from 'mongoose';
 
 export default class Rooster {
   async add(message: string): Promise<mongoose.Types.ObjectId> {

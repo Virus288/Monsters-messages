@@ -1,15 +1,15 @@
-import Rooster from './rooster';
-import Details from '../messagesDetails/controller';
-import * as errors from '../../errors';
-import Validator from '../messages/validation';
-import type { IFullMessageEntity } from '../messages/entity';
-import type { IGetMessageDto, IReadMessageDto, ISendMessageDto } from '../messages/dto';
-import ControllerFactory from '../../tools/abstract/controller';
-import type { EModules } from '../../tools/abstract/enums';
-import type { EMessageTargets } from '../../enums';
 import mongoose from 'mongoose';
+import Rooster from './rooster';
+import * as errors from '../../errors';
+import ControllerFactory from '../../tools/abstract/controller';
 import { formGetMessages, formUnreadMessages } from '../messages/utils';
+import Validator from '../messages/validation';
+import Details from '../messagesDetails/controller';
+import type { EMessageTargets } from '../../enums';
+import type { EModules } from '../../tools/abstract/enums';
 import type { IPreparedMessagesBody, IUnreadMessage } from '../../types';
+import type { IGetMessageDto, IReadMessageDto, ISendMessageDto } from '../messages/dto';
+import type { IFullMessageEntity } from '../messages/entity';
 
 export default class Controller extends ControllerFactory<EModules.Chat> {
   private readonly _details: Details;
@@ -32,6 +32,7 @@ export default class Controller extends ControllerFactory<EModules.Chat> {
 
     if (payload.target) return this.rooster.getWithDetails(payload.target, page);
     const messages = await this.rooster.get(userId, page);
+    if (!messages || messages.length === 0) return {};
     return formGetMessages(messages);
   }
 
@@ -43,8 +44,9 @@ export default class Controller extends ControllerFactory<EModules.Chat> {
     return formUnreadMessages(messages, userId);
   }
 
-  async send(payload: ISendMessageDto, type: EMessageTargets): Promise<void> {
+  async send(payload: ISendMessageDto, type: EMessageTargets, userId: string): Promise<void> {
     Validator.validateNewMessage(payload);
+    if (payload.sender === userId) throw new errors.ActionNotAllowed();
     const { body, sender, receiver } = payload;
 
     let convId = new mongoose.Types.ObjectId().toString();

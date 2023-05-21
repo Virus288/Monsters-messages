@@ -82,7 +82,7 @@ describe('Messages', () => {
       it(`Send - missing body`, () => {
         const clone = structuredClone(send);
         clone.body = undefined!;
-        controller.send(clone, EMessageTargets.Messages).catch((err) => {
+        controller.send(clone, EMessageTargets.Messages, localUser.userId).catch((err) => {
           expect(err).toEqual(new errors.MissingArgError('body'));
         });
       });
@@ -90,7 +90,7 @@ describe('Messages', () => {
       it(`Send - missing receiver`, () => {
         const clone = structuredClone(send);
         clone.receiver = undefined!;
-        controller.send(clone, EMessageTargets.Messages).catch((err) => {
+        controller.send(clone, EMessageTargets.Messages, localUser.userId).catch((err) => {
           expect(err).toEqual(new errors.MissingArgError('receiver'));
         });
       });
@@ -98,7 +98,7 @@ describe('Messages', () => {
       it(`Send - missing sender`, () => {
         const clone = structuredClone(send);
         clone.sender = undefined!;
-        controller.send(clone, EMessageTargets.Messages).catch((err) => {
+        controller.send(clone, EMessageTargets.Messages, localUser.userId).catch((err) => {
           expect(err).toEqual(new errors.MissingArgError('sender'));
         });
       });
@@ -169,7 +169,7 @@ describe('Messages', () => {
         const clone = structuredClone(send);
         clone.body = 'a';
 
-        controller.send(clone, EMessageTargets.Messages).catch((err) => {
+        controller.send(clone, EMessageTargets.Messages, localUser.userId).catch((err) => {
           expect(err).toEqual(new errors.IncorrectArgLengthError('body', 2, 1000));
         });
       });
@@ -178,7 +178,7 @@ describe('Messages', () => {
         const clone = structuredClone(send);
         clone.receiver = 'abc';
 
-        controller.send(clone, EMessageTargets.Messages).catch((err) => {
+        controller.send(clone, EMessageTargets.Messages, localUser.userId).catch((err) => {
           expect(err).toEqual(new errors.IncorrectArgLengthError('receiver', 24, 24));
         });
       });
@@ -187,7 +187,7 @@ describe('Messages', () => {
         const clone = structuredClone(send);
         clone.sender = 'abc';
 
-        controller.send(clone, EMessageTargets.Messages).catch((err) => {
+        controller.send(clone, EMessageTargets.Messages, localUser.userId).catch((err) => {
           expect(err).toEqual(new errors.IncorrectArgLengthError('sender', 24, 24));
         });
       });
@@ -207,6 +207,15 @@ describe('Messages', () => {
 
         controller.getUnread(clone, EMessageTargets.Messages, localUser.userId).catch((err) => {
           expect(err).toEqual(new errors.IncorrectArgTypeError('page should be number'));
+        });
+      });
+
+      it(`Send - cannot send message to yourself`, () => {
+        const clone = structuredClone(send);
+        clone.sender = localUser.userId;
+
+        controller.send(clone, EMessageTargets.Messages, localUser.userId).catch((err) => {
+          expect(err).toEqual(new errors.ActionNotAllowed());
         });
       });
     });
@@ -284,7 +293,7 @@ describe('Messages', () => {
     });
 
     it(`Send`, async () => {
-      await controller.send(send, EMessageTargets.Messages);
+      await controller.send(send, EMessageTargets.Messages, fakeMessage.receiver);
 
       const data = await controller.get(getMany, localUser.userId);
       const key = Object.keys(data)[0]!;
