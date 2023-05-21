@@ -1,8 +1,6 @@
-import Message from './model';
-import type * as types from '../../types';
-import type { EMessageTargets } from '../../enums';
-import { EDbCollections } from '../../enums';
 import mongoose from 'mongoose';
+import Message from './model';
+import { EDbCollections } from '../../enums';
 import type {
   IFullMessageEntity,
   IGetMessageEntity,
@@ -10,6 +8,8 @@ import type {
   IMessageEntity,
   IUnreadMessageEntity,
 } from './entity';
+import type { EMessageTargets } from '../../enums';
+import type * as types from '../../types';
 
 export default class Rooster {
   async add(data: types.INewMessage): Promise<void> {
@@ -27,6 +27,7 @@ export default class Rooster {
         chatId: true,
       })
       .limit(100)
+      .sort({ _id: -1 })
       .skip((page - 1) * 100)
       .lean();
   }
@@ -56,6 +57,7 @@ export default class Rooster {
       },
     ])
       .limit(100)
+      .sort({ _id: -1 })
       .skip((page - 1) * 100)) as IFullMessageEntity[];
 
     return !data || data.length === 0 ? [] : data;

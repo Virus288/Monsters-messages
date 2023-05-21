@@ -1,12 +1,12 @@
-import type { ConnectOptions } from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import getConfig from './configLoader';
 import Log from './logger/log';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import fakeData from '../../__tests__/utils/fakeData.json';
 import Database from '../../__tests__/utils/fakeFactory/src';
 import type { IMessageEntity } from '../modules/messages/entity';
 import type { IMessageDetailsEntity } from '../modules/messagesDetails/entity';
+import type { ConnectOptions } from 'mongoose';
 
 const fulfillDatabase = async (): Promise<void> => {
   const messages = fakeData.messages as IMessageEntity[];
@@ -39,6 +39,7 @@ const startServer = async (): Promise<void> => {
   await mongoose.connect(getConfig().mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    dbName: 'Messages',
   } as ConnectOptions);
   Log.log('Mongo', 'Started server');
 };

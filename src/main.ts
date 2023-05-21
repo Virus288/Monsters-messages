@@ -1,8 +1,8 @@
-import State from './tools/state';
-import errLogger from './tools/logger/logger';
-import Log from './tools/logger/log';
 import Broker from './broker';
+import Log from './tools/logger/log';
+import errLogger from './tools/logger/logger';
 import mongo, { disconnectMongo } from './tools/mongo';
+import State from './tools/state';
 
 class App {
   init(): void {

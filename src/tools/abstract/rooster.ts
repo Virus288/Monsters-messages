@@ -1,6 +1,6 @@
+import type { EModules } from './enums';
 import type { IRoosterAddData, IRoosterFactory, IRoosterGetData } from './types';
 import type { Document, Model } from 'mongoose';
-import type { EModules } from './enums';
 
 export default abstract class RoosterFactory<T extends Document, U extends Model<T>, Z extends EModules>
   implements IRoosterFactory<Z>

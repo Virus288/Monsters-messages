@@ -138,3 +138,13 @@ export class MessageAlreadyRead extends FullError {
     this.status = 400;
   }
 }
+
+export class ActionNotAllowed extends FullError {
+  constructor() {
+    super('ActionNotAllowed');
+    this.message = 'Actions not allowed';
+    this.name = 'ActionNotAllowed';
+    this.code = '014';
+    this.status = 400;
+  }
+}

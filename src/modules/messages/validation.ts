@@ -1,5 +1,5 @@
-import * as errors from '../../errors';
 import mongoose from 'mongoose';
+import * as errors from '../../errors';
 import type { IGetMessageDto, IReadMessageDto, ISendMessageDto } from './dto';
 
 export default class Validator {

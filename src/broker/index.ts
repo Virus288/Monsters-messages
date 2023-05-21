@@ -1,11 +1,11 @@
-import * as enums from '../enums';
-import type * as types from '../types';
 import amqplib from 'amqplib';
-import getConfig from '../tools/configLoader';
-import type { FullError } from '../errors';
-import { NotConnectedError } from '../errors';
-import Log from '../tools/logger/log';
 import Router from './router';
+import * as enums from '../enums';
+import { NotConnectedError } from '../errors';
+import getConfig from '../tools/configLoader';
+import Log from '../tools/logger/log';
+import type { FullError } from '../errors';
+import type * as types from '../types';
 
 export default class Broker {
   private _retryTimeout!: NodeJS.Timeout;
@@ -59,7 +59,7 @@ export default class Broker {
   }
 
   private initCommunication(): void {
-    if (this._connectionTries++ > enums.ERabbit.RetryLimit) {
+    if (this._connectionTries++ > Number(enums.ERabbit.RetryLimit)) {
       Log.error('Rabbit', 'Gave up connecting to rabbit. Is rabbit dead?');
       return;
     }
@@ -84,7 +84,7 @@ export default class Broker {
   private createChannels(): void {
     if (this._channel) return;
     if (!this._connection) throw new NotConnectedError();
-    if (this._channelTries++ > enums.ERabbit.RetryLimit) {
+    if (this._channelTries++ > Number(enums.ERabbit.RetryLimit)) {
       Log.error('Rabbit', 'Error creating rabbit connection channel, stopped retrying');
     }
 

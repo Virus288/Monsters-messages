@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import type * as type from '../../types';
 import * as enums from '../../enums';
 import { EMessageTargets } from '../../enums';
+import type * as type from '../../types';
 
 export const messageSchema = new mongoose.Schema(
   {

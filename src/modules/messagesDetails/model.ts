@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import type * as type from '../../types';
 import * as enums from '../../enums';
+import type * as type from '../../types';
 
 export const detailsSchema = new mongoose.Schema({
   message: {
