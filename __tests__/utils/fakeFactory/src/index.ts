@@ -13,11 +13,11 @@ export default class FakeFactory {
     this._chat = new FakeChat();
   }
 
-  get message(): FakeMessage {
+  get messages(): FakeMessage {
     return this._message;
   }
 
-  get details(): FakeDetails {
+  get messageDetails(): FakeDetails {
     return this._messageDetails;
   }
 

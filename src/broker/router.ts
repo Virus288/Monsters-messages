@@ -1,5 +1,4 @@
 import * as enums from '../enums';
-import { EMessageTargets } from '../enums';
 import * as errors from '../errors';
 import ChatController from '../modules/chat/handler';
 import MessagesController from '../modules/messages/handler';
@@ -38,9 +37,9 @@ export default class Router {
       case enums.EMessagesTargets.Get:
         return this.messages.get(payload.payload, payload.user);
       case enums.EMessagesTargets.GetUnread:
-        return this.messages.getUnread(payload.payload, EMessageTargets.Messages, payload.user);
+        return this.messages.getUnread(payload.payload, payload.user);
       case enums.EMessagesTargets.Send:
-        return this.messages.send(payload.payload, EMessageTargets.Messages, payload.user);
+        return this.messages.send(payload.payload, payload.user);
       case enums.EMessagesTargets.Read:
         return this.messages.read(payload.payload, payload.user);
       default:
@@ -53,9 +52,9 @@ export default class Router {
       case enums.EMessagesTargets.Get:
         return this.chat.get(payload.payload, payload.user);
       case enums.EMessagesTargets.GetUnread:
-        return this.chat.getUnread(payload.payload, EMessageTargets.Chat, payload.user);
+        return this.chat.getUnread(payload.payload, payload.user);
       case enums.EMessagesTargets.Send:
-        return this.chat.send(payload.payload, EMessageTargets.Chat, payload.user);
+        return this.chat.send(payload.payload, payload.user);
       case enums.EMessagesTargets.Read:
         return this.chat.read(payload.payload, payload.user);
       default:

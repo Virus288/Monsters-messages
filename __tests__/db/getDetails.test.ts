@@ -36,7 +36,7 @@ describe('Details - get', () => {
 
   describe('Should pass', () => {
     it(`Get all`, async () => {
-      await db.details.message(fakeDetails.message)._id(fakeDetails._id).create();
+      await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
       const allDetails = await rooster.getAll(1);
       const details = allDetails[0]!;
@@ -47,7 +47,7 @@ describe('Details - get', () => {
     });
 
     it(`Get one`, async () => {
-      await db.details.message(fakeDetails.message)._id(fakeDetails._id).create();
+      await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
       const allDetails = await rooster.get([fakeDetails._id]);
       const details = allDetails[0]!;

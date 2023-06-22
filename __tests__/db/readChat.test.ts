@@ -7,7 +7,7 @@ import { IMessageEntity } from '../../src/modules/messages/entity';
 import FakeFactory from '../utils/fakeFactory/src';
 import { IMessageDetailsEntity } from '../../src/modules/messagesDetails/entity';
 
-describe('Chat - modify', () => {
+describe('Chat - read', () => {
   const db = new FakeFactory();
   const fakeMessage = fakeData.messages[0] as IMessageEntity;
   const fakeDetails = fakeData.details[0] as IMessageDetailsEntity;
@@ -47,7 +47,7 @@ describe('Chat - modify', () => {
         .read(fakeMessage.read)
         .receiver(fakeMessage.receiver)
         .create();
-      await db.details.message(fakeDetails.message)._id(fakeDetails._id).create();
+      await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
       await rooster.update(fakeMessage.chatId, fakeMessage.sender, { read: true });
       const message = await rooster.getOneByChatId(fakeMessage.chatId, fakeMessage.receiver);

@@ -38,7 +38,7 @@ describe('Message - get', () => {
 
   describe('Should pass', () => {
     it(`Get all`, async () => {
-      await db.message
+      await db.messages
         .sender(fakeMessage.sender)
         .body(fakeMessage.body)
         .chatId(fakeMessage.chatId)
@@ -47,7 +47,7 @@ describe('Message - get', () => {
         .read(fakeMessage.read)
         .receiver(fakeMessage.receiver)
         .create();
-      await db.details.message(fakeDetails.message)._id(fakeDetails._id).create();
+      await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
       const messages = await rooster.get(fakeMessage.sender, 1);
       const message = messages[0]!;
@@ -60,7 +60,7 @@ describe('Message - get', () => {
     });
 
     it(`Get one`, async () => {
-      await db.message
+      await db.messages
         .sender(fakeMessage.sender)
         .body(fakeMessage.body)
         .chatId(fakeMessage.chatId)
@@ -69,7 +69,7 @@ describe('Message - get', () => {
         .read(fakeMessage.read)
         .receiver(fakeMessage.receiver)
         .create();
-      await db.details.message(fakeDetails.message)._id(fakeDetails._id).create();
+      await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
       const message = await rooster.getOne(fakeMessage.sender, fakeMessage.receiver);
 
@@ -77,7 +77,7 @@ describe('Message - get', () => {
     });
 
     it(`Get unread`, async () => {
-      await db.message
+      await db.messages
         .sender(fakeMessage.sender)
         .body(fakeMessage.body)
         .chatId(fakeMessage.chatId)
@@ -86,9 +86,9 @@ describe('Message - get', () => {
         .read(fakeMessage.read)
         .receiver(fakeMessage.receiver)
         .create();
-      await db.details.message(fakeDetails.message)._id(fakeDetails._id).create();
+      await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
-      const messages = await rooster.getUnread(fakeMessage.sender, fakeMessage.type, 1);
+      const messages = await rooster.getUnread(fakeMessage.receiver, 1);
       const message = messages[0]!;
 
       expect(messages.length).toEqual(1);
@@ -98,7 +98,7 @@ describe('Message - get', () => {
     });
 
     it(`Get one by chatId`, async () => {
-      await db.message
+      await db.messages
         .sender(fakeMessage.sender)
         .body(fakeMessage.body)
         .chatId(fakeMessage.chatId)
@@ -107,7 +107,7 @@ describe('Message - get', () => {
         .read(fakeMessage.read)
         .receiver(fakeMessage.receiver)
         .create();
-      await db.details.message(fakeDetails.message)._id(fakeDetails._id).create();
+      await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
       const message = await rooster.getOneByChatId(fakeMessage.chatId, fakeMessage.receiver);
       expect(message?.chatId.toString()).toEqual(fakeMessage.chatId);
@@ -116,7 +116,7 @@ describe('Message - get', () => {
     });
 
     it(`Get with details`, async () => {
-      await db.message
+      await db.messages
         .sender(fakeMessage.sender)
         .body(fakeMessage.body)
         .chatId(fakeMessage.chatId)
@@ -125,7 +125,7 @@ describe('Message - get', () => {
         .read(fakeMessage.read)
         .receiver(fakeMessage.receiver)
         .create();
-      await db.details.message(fakeDetails.message)._id(fakeDetails._id).create();
+      await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
       const messages = await rooster.getWithDetails(fakeMessage.chatId, 1);
       const message = messages[0]!;

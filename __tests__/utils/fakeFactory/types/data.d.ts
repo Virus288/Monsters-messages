@@ -1,5 +1,5 @@
 import type { EFakeData } from '../enums';
-import type Message from '../../../../src/modules/messages/model';
+import type Messages from '../../../../src/modules/messages/model';
 import type Details from '../../../../src/modules/messagesDetails/model';
 import { IMessageEntity } from '../../../../src/modules/messages/entity';
 import { IMessageDetailsEntity } from '../../../../src/modules/messagesDetails/entity';
@@ -10,13 +10,13 @@ export type IFakeParam<T> = {
 };
 
 export interface IFakeState {
-  [EFakeData.Message]: IFakeParam<IMessageEntity>;
+  [EFakeData.Messages]: IFakeParam<IMessageEntity>;
   [EFakeData.MessageDetails]: IFakeParam<IMessageDetailsEntity>;
   [EFakeData.Chat]: IFakeParam<IMessageEntity>;
 }
 
 export interface IFakeModel {
-  [EFakeData.Message]: typeof Message;
+  [EFakeData.Messages]: typeof Messages;
   [EFakeData.MessageDetails]: typeof Details;
   [EFakeData.Chat]: typeof Chat;
 }

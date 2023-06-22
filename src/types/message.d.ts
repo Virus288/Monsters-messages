@@ -1,6 +1,6 @@
 import type { EMessageTargets } from '../enums';
-import type { ISendMessageDto } from '../modules/messages/dto';
 import type { IMessageEntity } from '../modules/messages/entity';
+import type { ISendMessageDto } from '../modules/messages/send/types';
 import type mongoose from 'mongoose';
 
 export interface IMessage extends IMessageEntity, mongoose.Document {

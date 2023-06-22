@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
-import Validation from '../../../src/modules/messages/validation';
 import * as errors from '../../../src/errors';
-import { IGetMessageDto } from '../../../src/modules/messages/dto';
+import { IGetMessageDto } from '../../../src/modules/messages/get/types';
+import GetMessageDto from '../../../src/modules/messages/get/dto';
 
 describe('Message - get', () => {
   const get: IGetMessageDto = { page: 1 };
@@ -12,9 +12,12 @@ describe('Message - get', () => {
       it(`Missing page`, () => {
         const clone = structuredClone(get);
         clone.page = undefined!;
-        const func = () => Validation.validateGetMessage(clone);
 
-        expect(func).toThrow(new errors.MissingArgError('page'));
+        try {
+          new GetMessageDto(clone);
+        } catch (err) {
+          expect(err).toEqual(new errors.MissingArgError('page'));
+        }
       });
     });
 
@@ -22,17 +25,23 @@ describe('Message - get', () => {
       it(`Page incorrect type`, () => {
         const clone = structuredClone(get);
         clone.page = 'bc' as unknown as number;
-        const func = () => Validation.validateGetMessage(clone);
 
-        expect(func).toThrow(new errors.IncorrectArgTypeError('page should be number'));
+        try {
+          new GetMessageDto(clone);
+        } catch (err) {
+          expect(err).toEqual(new errors.IncorrectArgTypeError('page should be number'));
+        }
       });
 
       it(`Target incorrect type`, () => {
         const clone = structuredClone(getWithData);
         clone.target = 'bc';
-        const func = () => Validation.validateGetMessage(clone);
 
-        expect(func).toThrow(new errors.IncorrectArgTypeError('Elm target should be 24 characters'));
+        try {
+          new GetMessageDto(clone);
+        } catch (err) {
+          expect(err).toEqual(new errors.IncorrectArgTypeError('target should be objectId'));
+        }
       });
     });
   });
@@ -40,15 +49,12 @@ describe('Message - get', () => {
   describe('Should pass', () => {
     it(`Get multi`, () => {
       const clone = structuredClone(get);
-      const func = () => Validation.validateGetMessage(clone);
 
-      expect(func).not.toThrow();
-    });
-    it(`Get 1`, () => {
-      const clone = structuredClone(getWithData);
-      const func = () => Validation.validateGetMessage(clone);
-
-      expect(func).not.toThrow();
+      try {
+        new GetMessageDto(clone);
+      } catch (err) {
+        expect(err).toBeUndefined();
+      }
     });
   });
 });

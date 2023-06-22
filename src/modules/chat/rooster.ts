@@ -1,15 +1,14 @@
 import mongoose from 'mongoose';
 import Chat from './model';
-import { EDbCollections } from '../../enums';
-import type { EMessageTargets } from '../../enums';
-import type * as types from '../../types';
+import { EDbCollections, EMessageTargets } from '../../enums';
 import type {
-  IFullMessageEntity,
-  IGetMessageEntity,
-  IGetOneMessageEntity,
-  IMessageEntity,
-  IUnreadMessageEntity,
-} from '../messages/entity';
+  IChatMessageEntity,
+  IFullChatMessageEntity,
+  IGetChatMessageEntity,
+  IGetOneChatMessageEntity,
+  IUnreadChatMessageEntity,
+} from './entity';
+import type * as types from '../../types';
 
 export default class Rooster {
   async add(data: types.INewMessage): Promise<void> {
@@ -17,7 +16,7 @@ export default class Rooster {
     await NewMessage.save();
   }
 
-  async get(owner: string, page: number): Promise<IGetMessageEntity[]> {
+  async get(owner: string, page: number): Promise<IGetChatMessageEntity[]> {
     return Chat.find({ $or: [{ sender: owner }, { receiver: owner }] })
       .select({
         _id: false,
@@ -32,7 +31,7 @@ export default class Rooster {
       .lean();
   }
 
-  async getWithDetails(chatId: string, page: number): Promise<IFullMessageEntity[]> {
+  async getWithDetails(chatId: string, page: number): Promise<IFullChatMessageEntity[]> {
     const data = (await Chat.aggregate([
       {
         $match: { chatId: new mongoose.Types.ObjectId(chatId) },
@@ -58,7 +57,7 @@ export default class Rooster {
     ])
       .limit(100)
       .sort({ _id: -1 })
-      .skip((page - 1) * 100)) as IFullMessageEntity[];
+      .skip((page - 1) * 100)) as IFullChatMessageEntity[];
 
     return !data || data.length === 0 ? [] : data;
   }
@@ -77,7 +76,7 @@ export default class Rooster {
       .lean();
   }
 
-  async getOneByChatId(chatId: string, receiver: string): Promise<IGetOneMessageEntity | null> {
+  async getOneByChatId(chatId: string, receiver: string): Promise<IGetOneChatMessageEntity | null> {
     return Chat.findOne({ chatId, receiver })
       .select({
         read: true,
@@ -87,8 +86,8 @@ export default class Rooster {
       .lean();
   }
 
-  async getUnread(owner: string, type: EMessageTargets, page: number): Promise<IUnreadMessageEntity[]> {
-    return Chat.find({ $or: [{ sender: owner }, { receiver: owner }], read: false, type })
+  async getUnread(owner: string, page: number): Promise<IUnreadChatMessageEntity[]> {
+    return Chat.find({ $or: [{ sender: owner }, { receiver: owner }], read: false, type: EMessageTargets.Chat })
       .select({ chatId: true, sender: true, receiver: true, createdAt: true })
       .sort({ createdAt: 1 })
       .limit(100)
@@ -99,7 +98,7 @@ export default class Rooster {
   async update(
     chatId: string,
     sender: string,
-    data: types.IObjectUpdate<IMessageEntity, keyof IMessageEntity>,
+    data: types.IObjectUpdate<IChatMessageEntity, keyof IChatMessageEntity>,
   ): Promise<void> {
     await Chat.updateMany({ chatId, sender }, { $set: { ...data } }, { upsert: true });
   }

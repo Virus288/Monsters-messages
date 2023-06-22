@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
-import Validation from '../../../src/modules/messages/validation';
 import * as errors from '../../../src/errors';
-import { ISendMessageDto } from '../../../src/modules/messages/dto';
+import { ISendMessageDto } from '../../../src/modules/messages/send/types';
+import SendMessageDto from '../../../src/modules/messages/send/dto';
 
 describe('Message - send', () => {
   const send: ISendMessageDto = {
@@ -15,25 +15,34 @@ describe('Message - send', () => {
       it(`Missing body`, () => {
         const clone = structuredClone(send);
         clone.body = undefined!;
-        const func = () => Validation.validateNewMessage(clone);
 
-        expect(func).toThrow(new errors.MissingArgError('body'));
+        try {
+          new SendMessageDto(clone);
+        } catch (err) {
+          expect(err).toEqual(new errors.MissingArgError('body'));
+        }
       });
 
       it(`Missing receiver`, () => {
         const clone = structuredClone(send);
         clone.receiver = undefined!;
-        const func = () => Validation.validateNewMessage(clone);
 
-        expect(func).toThrow(new errors.MissingArgError('receiver'));
+        try {
+          new SendMessageDto(clone);
+        } catch (err) {
+          expect(err).toEqual(new errors.MissingArgError('receiver'));
+        }
       });
 
       it(`Missing sender`, () => {
         const clone = structuredClone(send);
         clone.sender = undefined!;
-        const func = () => Validation.validateNewMessage(clone);
 
-        expect(func).toThrow(new errors.MissingArgError('sender'));
+        try {
+          new SendMessageDto(clone);
+        } catch (err) {
+          expect(err).toEqual(new errors.MissingArgError('sender'));
+        }
       });
     });
 
@@ -41,17 +50,23 @@ describe('Message - send', () => {
       it(`Receiver incorrect type`, () => {
         const clone = structuredClone(send);
         clone.receiver = 'asd';
-        const func = () => Validation.validateNewMessage(clone);
 
-        expect(func).toThrow(new errors.IncorrectArgLengthError('receiver', 24, 24));
+        try {
+          new SendMessageDto(clone);
+        } catch (err) {
+          expect(err).toEqual(new errors.IncorrectArgTypeError('receiver should be objectId'));
+        }
       });
 
       it(`Sender incorrect type`, () => {
         const clone = structuredClone(send);
         clone.sender = 'asd';
-        const func = () => Validation.validateNewMessage(clone);
 
-        expect(func).toThrow(new errors.IncorrectArgLengthError('sender', 24, 24));
+        try {
+          new SendMessageDto(clone);
+        } catch (err) {
+          expect(err).toEqual(new errors.IncorrectArgTypeError('sender should be objectId'));
+        }
       });
     });
   });
@@ -59,9 +74,11 @@ describe('Message - send', () => {
   describe('Should pass', () => {
     it(`send`, () => {
       const clone = structuredClone(send);
-      const func = () => Validation.validateNewMessage(clone);
-
-      expect(func).not.toThrow();
+      try {
+        new SendMessageDto(clone);
+      } catch (err) {
+        expect(err).toBeUndefined();
+      }
     });
   });
 });

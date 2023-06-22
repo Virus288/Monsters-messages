@@ -1,7 +1,7 @@
-import type { ISendMessageDto } from './send/types';
+import type { ISendChatMessageDto } from './send/types';
 import type { EMessageTargets } from '../../enums';
 
-export interface IMessageEntity extends ISendMessageDto {
+export interface IChatMessageEntity extends ISendChatMessageDto {
   _id: string;
   read: boolean;
   type: EMessageTargets;
@@ -10,7 +10,7 @@ export interface IMessageEntity extends ISendMessageDto {
   updatedAt: string;
 }
 
-export interface IFullMessageEntity {
+export interface IFullChatMessageEntity {
   sender: string;
   receiver: string;
   read: boolean;
@@ -18,21 +18,21 @@ export interface IFullMessageEntity {
   message: string;
 }
 
-export interface IGetMessageEntity {
+export interface IGetChatMessageEntity {
   sender: string;
   receiver: string;
   type: EMessageTargets;
   chatId: string;
 }
 
-export interface IUnreadMessageEntity {
+export interface IUnreadChatMessageEntity {
   chatId: string;
   sender: string;
   receiver: string;
   createdAt: string;
 }
 
-export interface IGetOneMessageEntity {
+export interface IGetOneChatMessageEntity {
   read: boolean;
   chatId: string;
   sender: string;

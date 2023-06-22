@@ -55,7 +55,7 @@ export default class FakeChat extends TemplateFactory<EFakeData.Chat> implements
     return this;
   }
 
-  protected fillState(): void {
+  protected override fillState(): void {
     this.state = {
       _id: undefined,
       body: undefined,

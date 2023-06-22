@@ -1,26 +1,34 @@
 import Broker from './broker';
 import Log from './tools/logger/log';
-import errLogger from './tools/logger/logger';
-import mongo, { disconnectMongo } from './tools/mongo';
+import Mongo from './tools/mongo';
 import State from './tools/state';
+import type { IFullError } from './types';
 
 class App {
   init(): void {
-    const broker = new Broker();
+    this.start().catch((err) => {
+      const { stack, message } = err as IFullError;
+      Log.log('Server', 'Err while initializing app');
+      Log.log('Server', message, stack);
 
-    mongo()
-      .then(() => {
-        State.Broker = broker;
-        return broker.init();
-      })
-      .catch((err) => {
-        Log.log('Server', 'Err while initializing app', JSON.stringify(err));
-        errLogger.error(err);
-        errLogger.error(JSON.stringify(err));
+      return this.kill();
+    });
+  }
 
-        disconnectMongo();
-        broker.close();
-      });
+  kill(): void {
+    State.broker.close();
+
+    Log.log('Server', 'Server closed');
+  }
+
+  private async start(): Promise<void> {
+    const mongo = new Mongo();
+    await mongo.init();
+
+    State.broker = new Broker();
+
+    State.broker.init();
+    Log.log('Server', 'Server started');
   }
 }
 

@@ -9,7 +9,7 @@ import { IMessageDetailsEntity } from '../../src/modules/messagesDetails/entity'
 
 describe('Chat - get', () => {
   const db = new FakeFactory();
-  const fakeMessage = fakeData.messages[0] as IMessageEntity;
+  const fakeMessage = fakeData.chatMessages[0] as IMessageEntity;
   const fakeDetails = fakeData.details[0] as IMessageDetailsEntity;
   const rooster = new Rooster();
 
@@ -47,7 +47,7 @@ describe('Chat - get', () => {
         .read(fakeMessage.read)
         .receiver(fakeMessage.receiver)
         .create();
-      await db.details.message(fakeDetails.message)._id(fakeDetails._id).create();
+      await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
       const messages = await rooster.get(fakeMessage.sender, 1);
       const message = messages[0]!;
@@ -69,7 +69,7 @@ describe('Chat - get', () => {
         .read(fakeMessage.read)
         .receiver(fakeMessage.receiver)
         .create();
-      await db.details.message(fakeDetails.message)._id(fakeDetails._id).create();
+      await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
       const message = await rooster.getOne(fakeMessage.sender, fakeMessage.receiver);
 
@@ -86,9 +86,9 @@ describe('Chat - get', () => {
         .read(fakeMessage.read)
         .receiver(fakeMessage.receiver)
         .create();
-      await db.details.message(fakeDetails.message)._id(fakeDetails._id).create();
+      await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
-      const messages = await rooster.getUnread(fakeMessage.sender, fakeMessage.type, 1);
+      const messages = await rooster.getUnread(fakeMessage.sender, 1);
       const message = messages[0]!;
 
       expect(messages.length).toEqual(1);
@@ -107,7 +107,7 @@ describe('Chat - get', () => {
         .read(fakeMessage.read)
         .receiver(fakeMessage.receiver)
         .create();
-      await db.details.message(fakeDetails.message)._id(fakeDetails._id).create();
+      await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
       const message = await rooster.getOneByChatId(fakeMessage.chatId, fakeMessage.receiver);
       expect(message?.chatId.toString()).toEqual(fakeMessage.chatId);
@@ -125,7 +125,7 @@ describe('Chat - get', () => {
         .read(fakeMessage.read)
         .receiver(fakeMessage.receiver)
         .create();
-      await db.details.message(fakeDetails.message)._id(fakeDetails._id).create();
+      await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
       const messages = await rooster.getWithDetails(fakeMessage.chatId, 1);
       const message = messages[0]!;

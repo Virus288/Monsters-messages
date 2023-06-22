@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import Message from './model';
-import { EDbCollections } from '../../enums';
+import { EDbCollections, EMessageTargets } from '../../enums';
 import type {
   IFullMessageEntity,
   IGetMessageEntity,
@@ -8,7 +8,6 @@ import type {
   IMessageEntity,
   IUnreadMessageEntity,
 } from './entity';
-import type { EMessageTargets } from '../../enums';
 import type * as types from '../../types';
 
 export default class Rooster {
@@ -87,8 +86,8 @@ export default class Rooster {
       .lean();
   }
 
-  async getUnread(owner: string, type: EMessageTargets, page: number): Promise<IUnreadMessageEntity[]> {
-    return Message.find({ $or: [{ sender: owner }, { receiver: owner }], read: false, type })
+  async getUnread(owner: string, page: number): Promise<IUnreadMessageEntity[]> {
+    return Message.find({ $or: [{ sender: owner }, { receiver: owner }], read: false, type: EMessageTargets.Messages })
       .select({ chatId: true, sender: true, receiver: true, createdAt: true })
       .sort({ createdAt: 1 })
       .limit(100)

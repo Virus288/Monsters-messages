@@ -22,7 +22,7 @@ export default class FakeDetails
     return this;
   }
 
-  protected fillState(): void {
+  protected override fillState(): void {
     this.state = {
       _id: undefined,
       message: undefined,

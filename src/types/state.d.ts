@@ -1,7 +1,7 @@
 import type Broker from '../broker';
 
 export interface IState {
-  Broker: Broker;
+  broker: Broker;
 }
 
 export interface IConfigInterface {

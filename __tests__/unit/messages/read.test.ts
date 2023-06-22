@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
-import Validation from '../../../src/modules/messages/validation';
 import * as errors from '../../../src/errors';
-import { IReadMessageDto } from '../../../src/modules/messages/dto';
+import { IReadMessageDto } from '../../../src/modules/messages/read/types';
+import ReadMessageDto from '../../../src/modules/messages/read/dto';
 
 describe('Message - read', () => {
   const read: IReadMessageDto = { chatId: '63e55edbe8a800060911121d', user: '63e55edbe8a800060911121d' };
@@ -11,17 +11,22 @@ describe('Message - read', () => {
       it(`Missing id`, () => {
         const clone = structuredClone(read);
         clone.chatId = undefined!;
-        const func = () => Validation.validateReadMessage(clone);
 
-        expect(func).toThrow(new errors.MissingArgError('chatId'));
+        try {
+          new ReadMessageDto(clone);
+        } catch (err) {
+          expect(err).toEqual(new errors.MissingArgError('chatId'));
+        }
       });
 
       it(`Missing user`, () => {
         const clone = structuredClone(read);
         clone.user = undefined!;
-        const func = () => Validation.validateReadMessage(clone);
-
-        expect(func).toThrow(new errors.MissingArgError('user'));
+        try {
+          new ReadMessageDto(clone);
+        } catch (err) {
+          expect(err).toEqual(new errors.MissingArgError('user'));
+        }
       });
     });
 
@@ -29,17 +34,23 @@ describe('Message - read', () => {
       it(`Id incorrect type`, () => {
         const clone = structuredClone(read);
         clone.chatId = 'id';
-        const func = () => Validation.validateReadMessage(clone);
 
-        expect(func).toThrow(new errors.IncorrectArgLengthError('chatId', 24, 24));
+        try {
+          new ReadMessageDto(clone);
+        } catch (err) {
+          expect(err).toEqual(new errors.IncorrectArgTypeError('chatId should be objectId'));
+        }
       });
 
       it(`User incorrect type`, () => {
         const clone = structuredClone(read);
         clone.user = 'bc';
-        const func = () => Validation.validateReadMessage(clone);
 
-        expect(func).toThrow(new errors.IncorrectArgLengthError('user', 24, 24));
+        try {
+          new ReadMessageDto(clone);
+        } catch (err) {
+          expect(err).toEqual(new errors.IncorrectArgTypeError('user should be objectId'));
+        }
       });
     });
   });
@@ -47,9 +58,11 @@ describe('Message - read', () => {
   describe('Should pass', () => {
     it(`Read`, () => {
       const clone = structuredClone(read);
-      const func = () => Validation.validateReadMessage(clone);
-
-      expect(func).not.toThrow();
+      try {
+        new ReadMessageDto(clone);
+      } catch (err) {
+        expect(err).toBeUndefined();
+      }
     });
   });
 });

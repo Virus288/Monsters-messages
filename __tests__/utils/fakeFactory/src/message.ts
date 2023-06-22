@@ -5,7 +5,7 @@ import type { IAbstractBody } from '../types/data';
 import { IMessageEntity } from '../../../../src/modules/messages/entity';
 import { EMessageTargets } from '../../../../src/enums';
 
-export default class FakeMessage extends TemplateFactory<EFakeData.Message> implements IAbstractBody<IMessageEntity> {
+export default class FakeMessage extends TemplateFactory<EFakeData.Messages> implements IAbstractBody<IMessageEntity> {
   constructor() {
     super(Message);
   }
@@ -55,7 +55,7 @@ export default class FakeMessage extends TemplateFactory<EFakeData.Message> impl
     return this;
   }
 
-  protected fillState(): void {
+  protected override fillState(): void {
     this.state = {
       _id: undefined,
       body: undefined,
