@@ -1,16 +1,9 @@
 import mongoose from 'mongoose';
-import Mock from './mock';
 import getConfig from '../configLoader';
 import Log from '../logger/log';
 import type { ConnectOptions } from 'mongoose';
 
 export default class Mongo {
-  mock: Mock;
-
-  constructor() {
-    this.mock = new Mock();
-  }
-
   async init(): Promise<void> {
     process.env.NODE_ENV === 'test' ? await this.startMockServer() : await this.startServer();
   }
@@ -21,14 +14,17 @@ export default class Mongo {
   }
 
   private async startMockServer(): Promise<void> {
-    await this.mock.init();
+    console.info('Inside mock');
+    const MockServer = await import('./mock');
+    const mock = new MockServer.default();
+    await mock.init();
   }
 
   private async startServer(): Promise<void> {
     await mongoose.connect(getConfig().mongoURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      dbName: 'Users',
+      dbName: 'Messages',
     } as ConnectOptions);
     Log.log('Mongo', 'Started server');
   }
