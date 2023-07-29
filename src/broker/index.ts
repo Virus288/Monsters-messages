@@ -32,7 +32,7 @@ export default class Broker {
     const body = { ...this._queue[userId], payload, target };
     delete this._queue[userId];
     if (!this._channel) throw new NotConnectedError();
-    this._channel.sendToQueue(enums.EAmqQueues.Gateway, Buffer.from(JSON.stringify(body)));
+    this._channel.publish(enums.EAmqQueues.Gateway, '', Buffer.from(JSON.stringify(body)));
   }
 
   close(): void {
@@ -50,7 +50,7 @@ export default class Broker {
   private sendHeartBeat(payload: unknown, target: enums.EMessageTypes): void {
     const body = { payload, target };
     if (!this._channel) throw new NotConnectedError();
-    this._channel.sendToQueue(enums.EAmqQueues.Gateway, Buffer.from(JSON.stringify(body)));
+    this._channel.publish(enums.EAmqQueues.Gateway, '', Buffer.from(JSON.stringify(body)));
   }
 
   private reconnect(): void {
@@ -109,8 +109,8 @@ export default class Broker {
   }
 
   private async createQueue(): Promise<void> {
-    Log.log('Rabbit', `Creating channel: ${enums.EAmqQueues.Gateway}`);
-    Log.log('Rabbit', `Creating channel: ${enums.EAmqQueues.Messages}`);
+    Log.log('Rabbit', `Creating queue: ${enums.EAmqQueues.Gateway}`);
+    Log.log('Rabbit', `Creating queue: ${enums.EAmqQueues.Messages}`);
     await this._channel!.assertQueue(enums.EAmqQueues.Gateway, { durable: true });
     await this._channel!.assertQueue(enums.EAmqQueues.Messages, { durable: true });
     await this._channel!.consume(
