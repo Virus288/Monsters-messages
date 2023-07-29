@@ -1,4 +1,3 @@
-
 clean:
 	rm -rf ./build/
 
@@ -7,3 +6,6 @@ test:
 	&& npm run test:unit \
 	&& npm run test:db \
 	&& npm run test:e2e
+
+buildDocker:
+	docker build -t monsters/monsters-messages .
