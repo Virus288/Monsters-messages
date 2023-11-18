@@ -85,7 +85,7 @@ jobs:
           path: config/
 
       - name: Run tests
-        run: sudo apt-get install -y libssl1.1 libsasl2-2 libcurl4 openssl1.1 && yarn test:e2e && yarn test:unit && yarn test:db
+        run: apt-get install -y libssl1.1 libsasl2-2 libcurl4 openssl1.1 && yarn test:e2e && yarn test:unit && yarn test:db
 
   lint:
     needs: [setup-config]
