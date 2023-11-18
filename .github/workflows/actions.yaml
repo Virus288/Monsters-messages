@@ -85,8 +85,7 @@ jobs:
           path: config/
 
       - name: Run tests
-        run: sudo apt-get install -y libssl1.1 libsasl2-2 libcurl4 openssl1.1
-        run: yarn test:e2e && yarn test:unit && yarn test:db
+        run: apt-get update && apt-get install gdebi-core -y && wget http://ftp.us.debian.org/debian/pool/main/o/openssl/libssl1.1_1.1.1w-0+deb11u1_amd64.deb && gdebi --non-interactive libssl1.1_1.1.1w-0+deb11u1_amd64.deb && yarn test:e2e && yarn test:unit && yarn test:db
 
   lint:
     needs: [setup-config]
