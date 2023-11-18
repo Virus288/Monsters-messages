@@ -27,7 +27,7 @@ export default class Rooster {
       })
       .limit(100)
       .sort({ _id: -1 })
-      .skip((page - 1) * 100)
+      .skip((page <= 0 ? 0 : page - 1) * 100)
       .lean();
   }
 
@@ -57,7 +57,7 @@ export default class Rooster {
     ])
       .limit(100)
       .sort({ _id: -1 })
-      .skip((page - 1) * 100)) as IFullMessageEntity[];
+      .skip((page <= 0 ? 0 : page - 1) * 100)) as IFullMessageEntity[];
 
     return !data || data.length === 0 ? [] : data;
   }
@@ -91,7 +91,7 @@ export default class Rooster {
       .select({ chatId: true, sender: true, receiver: true, createdAt: true })
       .sort({ createdAt: 1 })
       .limit(100)
-      .skip((page - 1) * 100)
+      .skip((page <= 0 ? 0 : page - 1) * 100)
       .lean();
   }
 

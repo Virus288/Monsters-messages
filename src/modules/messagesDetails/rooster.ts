@@ -20,7 +20,7 @@ export default class Rooster {
   async getAll(page: number): Promise<IMessageDetailsEntity[]> {
     return Details.find({})
       .limit(100)
-      .skip((page - 1) * 100)
+      .skip((page <= 0 ? 0 : page - 1) * 100)
       .lean();
   }
 }
