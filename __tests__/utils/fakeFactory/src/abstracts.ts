@@ -45,7 +45,7 @@ export default abstract class TemplateFactory<T extends EFakeData> {
   async cleanUp(): Promise<void> {
     await Promise.all(
       Object.values(this.states).map(async (k) => {
-        return this._target.findOneAndDelete({ _id: k._id! });
+        return (this._target as mongoose.Model<unknown>).findOneAndDelete({ _id: k._id! });
       }),
     );
     this.states = [];
