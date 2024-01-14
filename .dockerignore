@@ -19,6 +19,5 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
-__tests__
 node_modules
 README.md

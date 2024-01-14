@@ -14,7 +14,6 @@ export default class Mongo {
   }
 
   private async startMockServer(): Promise<void> {
-    console.info('Inside mock');
     const MockServer = await import('./mock');
     const mock = new MockServer.default();
     await mock.init();
