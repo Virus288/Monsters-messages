@@ -1,5 +1,6 @@
 import devConfig from '../../config/devConfig.json';
 import prodConfig from '../../config/prodConfig.json';
+import testDevConfig from '../../config/testConfig.json';
 import type * as types from '../types';
 
 /**
@@ -7,6 +8,8 @@ import type * as types from '../types';
  */
 export default function getConfig(): types.IConfigInterface {
   switch (process.env.NODE_ENV) {
+    case 'testDev':
+      return testDevConfig as types.IConfigInterface;
     case 'dev':
     case 'test':
       return devConfig as types.IConfigInterface;

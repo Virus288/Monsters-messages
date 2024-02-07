@@ -9,3 +9,6 @@ test:
 
 buildDocker:
 	docker build -t monsters/monsters-messages .
+
+buildTestDocker:
+	docker build -t monsters/monsters-messages-test .

@@ -19,7 +19,6 @@ export default class Rooster {
   async get(owner: string, page: number): Promise<IGetMessageEntity[]> {
     return Message.find({ $or: [{ sender: owner }, { receiver: owner }] })
       .select({
-        _id: false,
         sender: true,
         receiver: true,
         type: true,
@@ -37,6 +36,9 @@ export default class Rooster {
         $match: { chatId: new mongoose.Types.ObjectId(chatId) },
       },
       {
+        $addFields: { date: '$createdAt' },
+      },
+      {
         $lookup: {
           from: EDbCollections.MessageDetails,
           localField: 'body',
@@ -46,17 +48,18 @@ export default class Rooster {
       },
       {
         $project: {
-          _id: 0,
+          _id: 1,
           chatId: 1,
           sender: 1,
           receiver: 1,
           read: 1,
+          date: true,
           message: { $arrayElemAt: ['$details.message', 0] },
         },
       },
     ])
       .limit(100)
-      .sort({ _id: -1 })
+      .sort({ _id: 1 })
       .skip((page <= 0 ? 0 : page - 1) * 100)) as IFullMessageEntity[];
 
     return !data || data.length === 0 ? [] : data;
