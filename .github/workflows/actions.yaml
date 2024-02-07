@@ -49,6 +49,7 @@ jobs:
             "mongoURI": "mongoUrl"
           }' > config/devConfig.json
           cp config/devConfig.json config/prodConfig.json
+          cp config/devConfig.json config/testConfig.json
 
       - name: Upload config
         uses: actions/upload-artifact@v2
