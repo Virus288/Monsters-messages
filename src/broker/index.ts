@@ -3,7 +3,7 @@ import Router from './router';
 import * as enums from '../enums';
 import { NotConnectedError } from '../errors';
 import getConfig from '../tools/configLoader';
-import Log from '../tools/logger/log';
+import Log from '../tools/logger';
 import type { FullError } from '../errors';
 import type * as types from '../types';
 
