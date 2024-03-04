@@ -1,5 +1,5 @@
 import Broker from './broker';
-import Log from './tools/logger/log';
+import Log from './tools/logger';
 import Mongo from './tools/mongo';
 import State from './tools/state';
 import type { IFullError } from './types';

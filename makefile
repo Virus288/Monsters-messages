@@ -11,4 +11,4 @@ buildDocker:
 	docker build -t monsters/monsters-messages .
 
 buildTestDocker:
-	docker build -t monsters/monsters-messages-test .
+	docker build --build-arg NODE_ENV=testDev -t monsters/monsters-messages-test .
