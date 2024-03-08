@@ -5,11 +5,12 @@ import Rooster from '../../src/modules/messagesDetails/rooster';
 import fakeData from '../utils/fakeData.json';
 import FakeFactory from '../utils/fakeFactory/src';
 import { IMessageDetailsEntity } from '../../src/modules/messagesDetails/entity';
+import Details from '../../src/modules/messagesDetails/model';
 
 describe('Details - get', () => {
   const db = new FakeFactory();
   const fakeDetails = fakeData.details[0] as IMessageDetailsEntity;
-  const rooster = new Rooster();
+  const rooster = new Rooster(Details);
 
   beforeAll(async () => {
     const server = await MongoMemoryServer.create();
@@ -28,7 +29,7 @@ describe('Details - get', () => {
   describe('Should throw', () => {
     describe('Missing data', () => {
       it(`Missing data`, async () => {
-        const message = await rooster.get([fakeDetails._id]);
+        const message = await rooster.getIn('_id', [fakeDetails._id]);
         expect(message.length).toEqual(0);
       });
     });
@@ -49,7 +50,7 @@ describe('Details - get', () => {
     it(`Get one`, async () => {
       await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
-      const allDetails = await rooster.get([fakeDetails._id]);
+      const allDetails = await rooster.getIn('_id', [fakeDetails._id]);
       const details = allDetails[0]!;
 
       expect(allDetails.length).toEqual(1);

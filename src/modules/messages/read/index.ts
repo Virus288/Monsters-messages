@@ -1,13 +1,14 @@
 import ReadChatMessageDto from './dto';
 import * as errors from '../../../errors';
 import ControllerFactory from '../../../tools/abstract/controller';
+import Message from '../model';
 import Rooster from '../rooster';
 import type { IReadMessageDto } from './types';
 import type { EModules } from '../../../tools/abstract/enums';
 
 export default class Controller extends ControllerFactory<EModules.Messages> {
   constructor() {
-    super(new Rooster());
+    super(new Rooster(Message));
   }
 
   async read(data: IReadMessageDto): Promise<void> {

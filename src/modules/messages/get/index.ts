@@ -1,5 +1,6 @@
 import GetChatMessageDto from './dto';
 import ControllerFactory from '../../../tools/abstract/controller';
+import Message from '../model';
 import Rooster from '../rooster';
 import { formGetMessages, formUnreadMessages } from '../utils';
 import type { IGetMessageDto } from './types';
@@ -9,7 +10,7 @@ import type { IFullMessageEntity } from '../entity';
 
 export default class Controller extends ControllerFactory<EModules.Messages> {
   constructor() {
-    super(new Rooster());
+    super(new Rooster(Message));
   }
 
   async get(
@@ -20,7 +21,7 @@ export default class Controller extends ControllerFactory<EModules.Messages> {
     const { page } = payload;
 
     if (payload.target) return this.rooster.getWithDetails(payload.target, page);
-    const messages = await this.rooster.get(userId, page);
+    const messages = await this.rooster.getByOwner(userId, page);
     if (!messages || messages.length === 0) return {};
     return formGetMessages(messages);
   }

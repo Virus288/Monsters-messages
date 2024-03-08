@@ -6,12 +6,13 @@ import fakeData from '../utils/fakeData.json';
 import { IMessageEntity } from '../../src/modules/messages/entity';
 import FakeFactory from '../utils/fakeFactory/src';
 import { IMessageDetailsEntity } from '../../src/modules/messagesDetails/entity';
+import Chat from '../../src/modules/chat/model';
 
 describe('Chat - get', () => {
   const db = new FakeFactory();
   const fakeMessage = fakeData.chatMessages[0] as IMessageEntity;
   const fakeDetails = fakeData.details[0] as IMessageDetailsEntity;
-  const rooster = new Rooster();
+  const rooster = new Rooster(Chat);
 
   beforeAll(async () => {
     const server = await MongoMemoryServer.create();
@@ -30,7 +31,7 @@ describe('Chat - get', () => {
   describe('Should throw', () => {
     describe('Missing data', () => {
       it(`Missing data`, async () => {
-        const message = await rooster.get(fakeMessage.sender, 1);
+        const message = await rooster.getByOwner(fakeMessage.sender, 1);
         expect(message.length).toEqual(0);
       });
     });
@@ -49,7 +50,7 @@ describe('Chat - get', () => {
         .create();
       await db.messageDetails.message(fakeDetails.message)._id(fakeDetails._id).create();
 
-      const messages = await rooster.get(fakeMessage.sender, 1);
+      const messages = await rooster.getByOwner(fakeMessage.sender, 1);
       const message = messages[0]!;
 
       expect(messages.length).toEqual(1);
