@@ -4,6 +4,7 @@ import { EMessageTargets } from '../../../enums';
 import * as errors from '../../../errors';
 import ControllerFactory from '../../../tools/abstract/controller';
 import Details from '../../messagesDetails/controller';
+import Message from '../model';
 import Rooster from '../rooster';
 import type { ISendMessageDto } from './types';
 import type { EModules } from '../../../tools/abstract/enums';
@@ -12,7 +13,7 @@ export default class Controller extends ControllerFactory<EModules.Messages> {
   private readonly _details: Details;
 
   constructor() {
-    super(new Rooster());
+    super(new Rooster(Message));
     this._details = new Details();
   }
 

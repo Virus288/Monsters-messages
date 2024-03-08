@@ -8,11 +8,12 @@ import FakeFactory from '../utils/fakeFactory/src';
 import { IFullError, INewMessage } from '../../src/types';
 import { EMessageTargets } from '../../src/enums';
 import { MongoIncorrectEnumError, MongoMissingError, MongoNotObjectIdError } from '../utils/errors';
+import Message from '../../src/modules/messages/model';
 
 describe('Message - add', () => {
   const db = new FakeFactory();
   const fakeMessage = fakeData.messages[0] as IMessageEntity;
-  const rooster = new Rooster();
+  const rooster = new Rooster(Message);
   const newMessage: INewMessage = {
     owner: fakeMessage.sender,
     type: fakeMessage.type,

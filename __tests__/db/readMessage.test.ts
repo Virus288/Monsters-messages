@@ -6,12 +6,13 @@ import fakeData from '../utils/fakeData.json';
 import { IMessageEntity } from '../../src/modules/messages/entity';
 import FakeFactory from '../utils/fakeFactory/src';
 import { IMessageDetailsEntity } from '../../src/modules/messagesDetails/entity';
+import Message from '../../src/modules/messages/model';
 
 describe('Message - read', () => {
   const db = new FakeFactory();
   const fakeMessage = fakeData.messages[0] as IMessageEntity;
   const fakeDetails = fakeData.details[0] as IMessageDetailsEntity;
-  const rooster = new Rooster();
+  const rooster = new Rooster(Message);
 
   beforeAll(async () => {
     const server = await MongoMemoryServer.create();
@@ -30,7 +31,7 @@ describe('Message - read', () => {
   describe('Should throw', () => {
     describe('Missing data', () => {
       it(`Missing data`, async () => {
-        const message = await rooster.get(fakeMessage.sender, 1);
+        const message = await rooster.getByOwner(fakeMessage.sender, 1);
         expect(message.length).toEqual(0);
       });
     });

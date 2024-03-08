@@ -1,5 +1,6 @@
 import type { ISendMessageDto } from './send/types';
 import type { EMessageTargets } from '../../enums';
+import type mongoose from 'mongoose';
 
 export interface IMessageEntity extends ISendMessageDto {
   _id: string;
@@ -36,4 +37,8 @@ export interface IGetOneMessageEntity {
   read: boolean;
   chatId: string;
   sender: string;
+}
+
+export interface IFullMessage extends IFullMessageEntity, mongoose.Document {
+  _id: mongoose.Types.ObjectId;
 }
