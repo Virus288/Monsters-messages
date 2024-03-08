@@ -21,8 +21,6 @@ export default class Mongo {
 
   private async startServer(): Promise<void> {
     await mongoose.connect(getConfig().mongoURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       dbName: 'Messages',
     } as ConnectOptions);
     Log.log('Mongo', 'Started server');
