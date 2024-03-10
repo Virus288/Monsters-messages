@@ -36,7 +36,7 @@
     "chalk": "4.1.2",
     "husky": "9.0.11",
     "mongoose": "8.2.0",
-    "node": "21.6.2",
+    "node": "21.7.1",
     "winston": "^3.8.2",
     "winston-daily-rotate-file": "^5.0.0"
   },
