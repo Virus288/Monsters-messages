@@ -1,11 +1,11 @@
 import amqplib from 'amqplib';
 import Router from './router';
-import * as enums from '../enums';
-import { NotConnectedError } from '../errors';
-import getConfig from '../tools/configLoader';
-import Log from '../tools/logger';
-import type { FullError } from '../errors';
-import type * as types from '../types';
+import * as enums from '../../enums';
+import { NotConnectedError } from '../../errors';
+import getConfig from '../../tools/configLoader';
+import Log from '../../tools/logger';
+import type { FullError } from '../../errors';
+import type * as types from '../../types';
 
 export default class Broker {
   private _retryTimeout!: NodeJS.Timeout;

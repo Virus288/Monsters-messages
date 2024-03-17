@@ -1,4 +1,4 @@
-import type Broker from '../broker';
+import type Broker from '../connections/broker';
 
 export interface IState {
   broker: Broker;
