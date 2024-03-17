@@ -1,9 +1,9 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
+import Log from '../..//tools/logger';
 import fakeData from '../../../__tests__/utils/fakeData.json';
 import { EFakeData } from '../../../__tests__/utils/fakeFactory/enums';
 import FakeFactory from '../../../__tests__/utils/fakeFactory/src';
-import Log from '../logger';
 import type { IFakeState } from '../../../__tests__/utils/fakeFactory/types/data';
 import type { IMessageEntity } from '../../modules/messages/entity';
 import type { IMessageDetailsEntity } from '../../modules/messagesDetails/entity';
